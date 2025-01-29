@@ -12,7 +12,7 @@ const initialState = {
   error: "",
   loading: false,
   total: 0,
-  newProduct: null,
+  newProduct: null, 
   toSellingLoading: false,
   topSellingProduct: null,
   card: null,
@@ -204,7 +204,7 @@ const productSlice = createSlice({
   initialState,
   reducers: {
     clearProduct: (state) => {
-      state.product = null;
+      state.product = null; 
     },
     productWishlistUpdate: (state) => {
       if (state.product.isInWishlist === "false") {
@@ -417,6 +417,6 @@ const productSlice = createSlice({
   },
 });
 
-export default productSlice.reducer;
+export default productSlice.reducer; 
 export const { clearProduct, clearProductList, productWishlistUpdate } =
   productSlice.actions;

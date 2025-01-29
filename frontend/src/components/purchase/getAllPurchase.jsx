@@ -96,7 +96,7 @@ const GetAllPurchase = () => {
     },
     {
       id: 3,
-      title: "Supplier",
+      title: "  Supplier",
       dataIndex: `supplier`,
       key: "supplierId",
       render: (supplier) => (

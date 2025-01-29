@@ -62,6 +62,7 @@ const AddProductCategory = () => {
               },
             ]}
           >
+            
             <Input />
           </Form.Item>
 

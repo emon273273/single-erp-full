@@ -13,6 +13,8 @@ const PrintToPdf = forwardRef(({ data }, ref) => {
     !invoiceData && dispatch(getSetting());
   }, [dispatch, invoiceData]);
 
+
+  
   return (
     <Fragment>
       <div ref={ref} className="invoice p-5 flex flex-col min-h-[29cm]">

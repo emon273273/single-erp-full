@@ -6,6 +6,8 @@ import { FaMoneyBillTransfer, FaMoneyBillTrendUp } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 export default function QuickLink({ pageConfig, setPageConfig }) {
   const { RangePicker } = DatePicker;
+ 
+  console.log("quicklink page config",pageConfig)
   const onCalendarChange = (dates) => {
     const startDate = dates[0].format("YYYY-MM-DD");
     const endDate = dates[1].format("YYYY-MM-DD");

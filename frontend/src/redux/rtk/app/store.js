@@ -1,7 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
 
-import PurchaseReturnListSlice from "../features/PurchaseReturnList/PurchaseReturnListSlice";
-import SaleReturnListSlice from "../features/SaleReturnList/SaleReturnListSlice";
 import accountReducer from "../features/account/accountSlice";
 import adjustInventorySlice from "../features/adjustInventory/adjustInventorySlice";
 import authSlice from "../features/auth/authSlice";
@@ -49,8 +47,10 @@ import ProductSortListSlice from "../features/productSortList/ProductSortListSli
 import productSubCategoryReducer from "../features/productSubCategory/productSubCategorySlice";
 import purchaseReducer from "../features/purchase/purchaseSlice";
 import purchaseOrderSlice from "../features/purchaseOrder/purchaseOrderSlice";
+import PurchaseReturnListSlice from "../features/PurchaseReturnList/PurchaseReturnListSlice";
 import salaryHistorySlice from "../features/salaryHistory/salaryHistorySlice";
 import saleReducer from "../features/sale/saleSlice";
+import SaleReturnListSlice from "../features/SaleReturnList/SaleReturnListSlice";
 import settingReducer from "../features/setting/settingSlice";
 import shiftSlice from "../features/shift/shiftSlice";
 import supplierReducer from "../features/supplier/supplierSlice";
@@ -60,6 +60,9 @@ import transactionReducer from "../features/transaction/transactionSlice";
 import uomSlice from "../features/uom/uomSlice";
 import userReducer from "../features/user/userSlice";
 import vatTaxSlice from "../features/vatTax/vatTaxSlice";
+
+
+
 
 const store = configureStore({
   reducer: {

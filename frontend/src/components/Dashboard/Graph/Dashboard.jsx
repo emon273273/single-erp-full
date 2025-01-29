@@ -1,12 +1,12 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 import moment from "moment";
 import { useSelector } from "react-redux";
+import Footer from "../../../layouts/Footer";
 import QuickLink from "../../../layouts/QuickLink";
 import Content from "../RecentContent/Content";
 import InventoryContent from "../RecentContent/InventoryContent";
 import DemoLine from "./Demoline";
-import Footer from "../../../layouts/Footer";
 
 const Dashboard = () => {
   const { data, loading } = useSelector((state) => state?.setting) || {};
@@ -16,7 +16,10 @@ const Dashboard = () => {
     endDate: moment().endOf("month").format("YYYY-MM-DD"),
   });
 
+ // console.log("page config is", pageConfig);
+
   let card;
+
   if (loading) {
     card = (
       <section className="grid sm:grid-cols-2 xl:grid-cols-4 gap-6 mt-5 mb-5">
@@ -31,6 +34,9 @@ const Dashboard = () => {
   } else if (!data && !loading) {
     card = "";
   }
+
+  console.log("card is ", card);
+
   return (
     <>
       <div className="mb-5">
@@ -40,6 +46,8 @@ const Dashboard = () => {
       <div className="mb-5">
         {data?.dashboardType === "inventory" ? (
           <InventoryContent pageConfig={pageConfig} />
+         
+         
         ) : (
           <Content pageConfig={pageConfig} />
         )}
