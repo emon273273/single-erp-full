@@ -53,6 +53,8 @@ export const callOpenAIVisionAPI = async (base64Image) => {
          - Maintain this exact structure
          - Include ALL fields even if null
       `;
+
+      
     const payload = {
       model: "gpt-4o-mini",
       messages: [
