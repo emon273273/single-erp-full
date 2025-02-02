@@ -4,6 +4,7 @@ import { Form, InputNumber, Select } from "antd";
 import { CiCircleRemove } from "react-icons/ci";
 import Card from "../../UI/Card";
 import SearchForm from "./SearchForm";
+import InvoiceUpload from "./InvoiceUpload";
 
 export default function ProductAdd({
   form,
@@ -287,6 +288,7 @@ export default function ProductAdd({
           </>
         )}
       </Form.List>
+      <InvoiceUpload/>
     </Card>
   );
 }
