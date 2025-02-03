@@ -6,7 +6,6 @@ import { CiCircleRemove } from "react-icons/ci";
 import Card from "../../UI/Card";
 import SearchForm from "./SearchForm";
 import InvoiceUpload from "./InvoiceUpload";
-import { DatePicker } from "antd";
 import dayjs from "dayjs";
 export default function ProductAdd({
   form,
@@ -15,9 +14,13 @@ export default function ProductAdd({
   totalCalculator,
   subTotal,
 }) {
-  const [extractedData, setExtractedData] = useState(null);
+  
+  console.log("form................",form)
+  console.log("productLoading............",productLoading)
+  console.log("totalcalculator...........",totalCalculator)
+  console.log("subtotal........",subTotal)
 
-  // Handle extracted data from InvoiceUpload
+  
   const handleDataExtracted = (data) => {
     if (!data) return;
 
@@ -44,8 +47,9 @@ export default function ProductAdd({
 
     const processedProducts = data.purchaseInvoiceProduct.map(
       (invoiceProduct) => ({
-        productId: null, // No need to find productId, set as null
-        productName: invoiceProduct.productName || "", // ✅ Fills product name field
+        key:invoiceProduct.id ||Math.random(),
+        productId: null, 
+        productName: invoiceProduct.productName || "", 
         productQuantity: invoiceProduct.productQuantity || 0,
         productPurchasePrice: invoiceProduct.productPurchasePrice || 0,
         productSalePrice: invoiceProduct.productSalePrice || 0,
@@ -99,9 +103,12 @@ export default function ProductAdd({
     totalCalculator(serial);
   };
 
+
+  
   // Render product details (keep your existing logic)
   const render = (index) => {
     const findId = form
+    
       .getFieldValue("purchaseInvoiceProduct")
       ?.find((_, i) => i === index)?.productId;
     const findProduct = productList?.find((item) => findId === item.id);
