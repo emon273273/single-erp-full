@@ -6,7 +6,6 @@ import { CiCircleRemove } from "react-icons/ci";
 import Card from "../../UI/Card";
 import SearchForm from "./SearchForm";
 import InvoiceUpload from "./InvoiceUpload";
-import { DatePicker } from "antd";
 import dayjs from "dayjs";
 export default function ProductAdd({
   form,
@@ -15,9 +14,9 @@ export default function ProductAdd({
   totalCalculator,
   subTotal,
 }) {
-  const [extractedData, setExtractedData] = useState(null);
+  
 
-  // Handle extracted data from InvoiceUpload
+  
   const handleDataExtracted = (data) => {
     if (!data) return;
 
@@ -44,8 +43,8 @@ export default function ProductAdd({
 
     const processedProducts = data.purchaseInvoiceProduct.map(
       (invoiceProduct) => ({
-        productId: null, // No need to find productId, set as null
-        productName: invoiceProduct.productName || "", // ✅ Fills product name field
+        productId: null, 
+        productName: invoiceProduct.productName || "",
         productQuantity: invoiceProduct.productQuantity || 0,
         productPurchasePrice: invoiceProduct.productPurchasePrice || 0,
         productSalePrice: invoiceProduct.productSalePrice || 0,
@@ -60,7 +59,7 @@ export default function ProductAdd({
 
     console.log("processed products", processedProducts);
 
-    // Set form values with extracted data
+    
     form.setFieldsValue({
       date: data.date ? dayjs(data.date) : null,
       paidAmount: data.paidAmount || 0,
@@ -68,14 +67,14 @@ export default function ProductAdd({
       supplierId: data.supplierId || "",
       note: data.note || "",
       supplierMemoNo: data.supplierMemoNo || "",
-      purchaseInvoiceProduct: processedProducts, // Use processedProducts with productId
+      purchaseInvoiceProduct: processedProducts, 
     });
 
-    // Trigger calculations for each product
+   
     processedProducts.forEach((_, index) => totalCalculator(index));
   };
 
-  // Handle product initialization (keep your existing logic)
+  
   const handleSetInitial = (product, serial) => {
     const productArray = form.getFieldValue("purchaseInvoiceProduct");
     const findProduct = productList.find((pro) => pro.id === product);

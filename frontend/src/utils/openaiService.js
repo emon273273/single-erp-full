@@ -1,3 +1,5 @@
+
+const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
 export const callOpenAIVisionAPI = async (base64Image) => {
     const headers = {
       "Content-Type": "application/json",
