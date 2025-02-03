@@ -33,7 +33,7 @@ const InvoiceUpload = ({ onExtract }) => {
       const extractedData = await callGeminiVisionAPI(base64Image);
       console.log("Extracted Data:", extractedData);
 
-      // Pass data to ProductAdd
+      
       if (onExtract) {
         onExtract(extractedData);
       }

@@ -38,6 +38,7 @@ const AddPurchase = () => {
 
   const onFormSubmit = async (values) => {
     try {
+
       const mergedObject = values.purchaseInvoiceProduct.reduce(
         (accumulator, currentObject) => {
           const productId = currentObject.productId;
@@ -51,9 +52,10 @@ const AddPurchase = () => {
         },
         {}
       );
-
       const mergedArray = Object.values(mergedObject);
+
       const newArray = mergedArray.map((product) => {
+        
         return {
           ...product,
           productId: product.productId,
