@@ -1,11 +1,12 @@
+import React, { useState } from "react";
 import Button from "@/UI/Button";
 import { PlusOutlined } from "@ant-design/icons";
 import { Form, InputNumber, Select } from "antd";
-import dayjs from "dayjs";
 import { CiCircleRemove } from "react-icons/ci";
 import Card from "../../UI/Card";
-import InvoiceUpload from "./InvoiceUpload";
 import SearchForm from "./SearchForm";
+import InvoiceUpload from "./InvoiceUpload";
+import dayjs from "dayjs";
 export default function ProductAdd({
   form,
   productList,
@@ -13,6 +14,13 @@ export default function ProductAdd({
   totalCalculator,
   subTotal,
 }) {
+  
+  console.log("form................",form)
+  console.log("productLoading............",productLoading)
+  console.log("totalcalculator...........",totalCalculator)
+  console.log("subtotal........",subTotal)
+
+  
   const handleDataExtracted = (data) => {
     if (!data) return;
 
@@ -39,8 +47,9 @@ export default function ProductAdd({
 
     const processedProducts = data.purchaseInvoiceProduct.map(
       (invoiceProduct) => ({
-        productId: null,
-        productName: invoiceProduct.productName || "",
+        key:invoiceProduct.id ||Math.random(),
+        productId: null, 
+        productName: invoiceProduct.productName || "", 
         productQuantity: invoiceProduct.productQuantity || 0,
         productPurchasePrice: invoiceProduct.productPurchasePrice || 0,
         productSalePrice: invoiceProduct.productSalePrice || 0,
@@ -53,6 +62,9 @@ export default function ProductAdd({
       purchaseInvoiceProduct: processedProducts,
     });
 
+    console.log("processed products", processedProducts);
+
+    // Set form values with extracted data
     form.setFieldsValue({
       date: data.date ? dayjs(data.date) : null,
       paidAmount: data.paidAmount || 0,
@@ -60,12 +72,14 @@ export default function ProductAdd({
       supplierId: data.supplierId || "",
       note: data.note || "",
       supplierMemoNo: data.supplierMemoNo || "",
-      purchaseInvoiceProduct: processedProducts,
+      purchaseInvoiceProduct: processedProducts, // Use processedProducts with productId
     });
 
+    // Trigger calculations for each product
     processedProducts.forEach((_, index) => totalCalculator(index));
   };
 
+  // Handle product initialization (keep your existing logic)
   const handleSetInitial = (product, serial) => {
     const productArray = form.getFieldValue("purchaseInvoiceProduct");
     const findProduct = productList.find((pro) => pro.id === product);
@@ -89,12 +103,15 @@ export default function ProductAdd({
     totalCalculator(serial);
   };
 
+
+  
   // Render product details (keep your existing logic)
   const render = (index) => {
-    const productName = form
+    const findId = form
+    
       .getFieldValue("purchaseInvoiceProduct")
-      ?.find((_, i) => i === index)?.productName;
-    const findProduct = productList?.find((item) => productName === item.name);
+      ?.find((_, i) => i === index)?.productId;
+    const findProduct = productList?.find((item) => findId === item.id);
 
     let colors = null;
     if (
@@ -124,18 +141,7 @@ export default function ProductAdd({
       );
     }
 
-    let ismatch = true;
-    let notmatchingmessage = null;
-    if (!findProduct) {
-      ismatch = false;
-      notmatchingmessage = (
-        <p className="text-red-500">
-          Product is not exist .please select another or create
-        </p>
-      );
-    }
-
-    return { stock, colors, ismatch, productName, notmatchingmessage };
+    return { stock, colors };
   };
 
   return (
@@ -178,7 +184,6 @@ export default function ProductAdd({
                 <tbody className="bg-tableBg">
                   {fields.map(({ key, name, ...restField }, index) => {
                     const indexedProduct = render(index);
-                    console.log(indexedProduct);
                     return (
                       <tr
                         key={key}
@@ -221,9 +226,6 @@ export default function ProductAdd({
                             </Select>
                           </Form.Item>
                           <div className="px-2">{indexedProduct.colors}</div>
-                          <div className="px-2">
-                            {indexedProduct.notmatchingmessage}
-                          </div>
                         </td>
 
                         <td className="py-2 pl-2 align-top">
