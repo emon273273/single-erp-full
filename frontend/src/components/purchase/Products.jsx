@@ -359,5 +359,5 @@ export default function ProductAdd({
 
       <InvoiceUpload onExtract={handleDataExtracted} />
     </Card>
-  );
+  );  
 }
