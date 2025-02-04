@@ -41,7 +41,7 @@ export const updateEmailConfig = createAsyncThunk(
       const { data } = await axios({
         method: "POST",
         headers: {
-          Accept: "application/json",
+          Accept: " ication/json",
           "Content-Type": "application/json;charset=UTF-8",
         },
         url: `email-config`,

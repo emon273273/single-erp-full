@@ -1,6 +1,7 @@
 import Tabs, { Tab } from "@/UI/Tabs";
 import EmailConfig from "./EmailConfig";
 import GeneralSetting from "./GeneralSetting";
+import ApiKeyForm from "./ApiConfig";
 // import QuickLinkSettings from "./QuickLinkSettings";
 
 export default function AppSettings() {
@@ -22,7 +23,14 @@ export default function AppSettings() {
           </Tab> */}
           <Tab label="Email Config">
             <EmailConfig />
+            
           </Tab>
+
+          <Tab label="API ">
+           <ApiKeyForm/>
+            
+          </Tab>
+          
         </Tabs>
       </div>
     </div>

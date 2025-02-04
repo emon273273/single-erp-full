@@ -74,6 +74,7 @@ class PermissionSeeder extends Seeder
             'wightUnit',
             'dimensionUnit',
             'manufacturer',
+            'apiConfig',
 
         ]);
 

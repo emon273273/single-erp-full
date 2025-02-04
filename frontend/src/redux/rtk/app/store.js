@@ -61,11 +61,14 @@ import uomSlice from "../features/uom/uomSlice";
 import userReducer from "../features/user/userSlice";
 import vatTaxSlice from "../features/vatTax/vatTaxSlice";
 
+import  apiConfigSlice from "../features/apiConfigAppsettings/apiConfigAppSettingsSlice"
+
 
 
 
 const store = configureStore({
   reducer: {
+    apiConfig:apiConfigSlice,
     cart: cartReducer,
     cartDynamic: cartDynamicSlice,
     suppliers: supplierReducer,

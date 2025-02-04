@@ -160,54 +160,57 @@ class RouteServiceProvider extends ServiceProvider
             Route::middleware('announcement')
                 ->prefix('announcement')
                 ->group(base_path('routes/announcementRoutes.php'));
-            route::middleware('discount')
+            Route::middleware('discount')
                 ->prefix('discount')
                 ->group(base_path('routes/discountRoutes.php'));
-            route::middleware('currency')
+            Route::middleware('currency')
                 ->prefix('currency')
                 ->group(base_path('routes/currencyRoutes.php'));
-            route::middleware('product-reports')
+            Route::middleware('product-reports')
                 ->prefix('product-reports')
                 ->group(base_path('routes/productReportRoutes.php'));
-            route::middleware('product-attribute')
+            Route::middleware('product-attribute')
                 ->prefix('product-attribute')
                 ->group(base_path('routes/productAttributeRoutes.php'));
-            route::middleware('product-attribute-value')
+            Route::middleware('product-attribute-value')
                 ->prefix('product-attribute-value')
                 ->group(base_path('routes/productAttributeValueRoutes.php'));
-            route::middleware('product-product-attribute-value')
+            Route::middleware('product-product-attribute-value')
                 ->prefix('product-product-attribute-value')
                 ->group(base_path('routes/productProductAttributeValueRoutes.php'));
-            route::middleware('googlelogin')
+            Route::middleware('googlelogin')
                 ->prefix('googlelogin')
                 ->group(base_path('routes/googleLoginRoutes.php'));
-            route::middleware('payment-method')
+            Route::middleware('payment-method')
                 ->prefix('payment-method')
                 ->group(base_path('routes/paymentMethodRoutes.php'));
-            route::middleware('manual-payment')
+            Route::middleware('manual-payment')
                 ->prefix('manual-payment')
                 ->group(base_path('routes/manualPaymentRoutes.php'));
-            route::middleware('customer-profileImage')
+            Route::middleware('customer-profileImage')
                 ->prefix('customer-profileImage')
                 ->group(base_path('routes/customerProfileImageRoutes.php'));
-            route::middleware('terms-and-condition')
+            Route::middleware('terms-and-condition')
                 ->prefix('terms-and-condition')
                 ->group(base_path('routes/termsAndConditionRoutes.php'));
-            route::middleware('uom')
+            Route::middleware('uom')
                 ->prefix('uom')
                 ->group(base_path('routes/uomRoutes.php'));
-            route::middleware('send-sms')
+            Route::middleware('send-sms')
                 ->prefix('send-sms')
                 ->group(base_path('routes/sendSmsRoutes.php'));
-            route::middleware('manufacturer')
+            Route::middleware('manufacturer')
                 ->prefix('manufacturer')
                 ->group(base_path('routes/manufacturerRoutes.php'));
-            route::middleware('weight-unit')
+            Route::middleware('weight-unit')
                 ->prefix('weight-unit')
                 ->group(base_path('routes/weightUnitRoutes.php'));
-            route::middleware('dimension-unit')
+            Route::middleware('dimension-unit')
                 ->prefix('dimension-unit')
                 ->group(base_path('routes/dimensionUnitRoutes.php'));
+            Route::middleware(('api-config'))
+                ->prefix('api-config')
+                ->group(base_path('routes/apiConfigRoutes.php'));
         });
     }
 }
