@@ -36,25 +36,35 @@ class ApiconfigController extends Controller
     }
 
     public function getApiConfig(): JsonResponse
-    {
-        try {
-            $apiConfig = ApiConfig::find(1); // Assuming a single API config row
-            if (!$apiConfig) {
-                return response()->json([
-                    'message' => 'API key not found.',
-                ], 404);
-            }
+{
+    try {
+        // Find the API config row by ID (assuming a single row)
+        $apiConfig = ApiConfig::find(1);
 
+        // Check if API config exists and has a valid API key
+        if (!$apiConfig || empty($apiConfig->apiKey)) {
             return response()->json([
-                'data' => $apiConfig->only('id', 'apiKey'), // Return only ID & API Key
-            ], 200);
-        } catch (\Exception $exception) {
-            return response()->json([
-                'error' => 'Failed to retrieve API key. Please try again later.',
-            ], 500);
+                'success' => false,
+                'message' => 'API key not found or invalid.',
+            ], 404);
         }
-    }
 
+        // Return the API key
+        return response()->json([
+            'success' => true,
+            'data' => $apiConfig->only(['id', 'apiKey']),
+        ], 200);
+    } catch (\Exception $e) {
+        // Log the exception for debugging (optional)
+        return response()->json('Error fetching API config: ' . $e->getMessage());
+
+        // Return a general error message
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to retrieve API key. Please try again later.',
+        ], 500);
+    }
+}
 
     public function deleteApiConfig()
 {

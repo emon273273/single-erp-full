@@ -1,12 +1,12 @@
-import React, { useState } from "react";
 import Button from "@/UI/Button";
 import { PlusOutlined } from "@ant-design/icons";
 import { Form, InputNumber, Select } from "antd";
+import dayjs from "dayjs";
 import { CiCircleRemove } from "react-icons/ci";
 import Card from "../../UI/Card";
-import SearchForm from "./SearchForm";
 import InvoiceUpload from "./InvoiceUpload";
-import dayjs from "dayjs";
+import SearchForm from "./SearchForm";
+
 export default function ProductAdd({
   form,
   productList,
@@ -14,42 +14,20 @@ export default function ProductAdd({
   totalCalculator,
   subTotal,
 }) {
-  
-  console.log("form................",form)
-  console.log("productLoading............",productLoading)
-  console.log("totalcalculator...........",totalCalculator)
-  console.log("subtotal........",subTotal)
+  // Simple validation function to check if product exists in database
+  const validateProductName = (nameToCheck) => {
+    if (!nameToCheck) return true;
+    return productList.some(product => product.name === nameToCheck);
+  };
 
-  
   const handleDataExtracted = (data) => {
     if (!data) return;
 
-    // Process products from API response
-    // const processedProducts =
-    //   data.purchaseInvoiceProduct?.map((invoiceProduct) => {
-    //     // Match product name to ID
-    //     const matchedProduct = productList.find((product) => {
-    //       return (
-    //         product.name.trim().toLowerCase() ===
-    //         invoiceProduct.productName?.trim().toLowerCase()
-    //       );
-    //     });
-    //     return {
-    //       productId: matchedProduct?.id || null, // Ensure productId is set
-    //       productQuantity: invoiceProduct.productQuantity || 0,
-    //       productPurchasePrice: invoiceProduct.productPurchasePrice || 0,
-    //       productSalePrice: invoiceProduct.productSalePrice || 0,
-    //       tax: invoiceProduct.taxPercentage || 0,
-    //     };
-    //   }) || [];
-
-    /////////////////////////////
-
     const processedProducts = data.purchaseInvoiceProduct.map(
       (invoiceProduct) => ({
-        key:invoiceProduct.id ||Math.random(),
-        productId: null, 
-        productName: invoiceProduct.productName || "", 
+        key: invoiceProduct.id || Math.random(),
+        productId: null,
+        productName: invoiceProduct.productName || "",
         productQuantity: invoiceProduct.productQuantity || 0,
         productPurchasePrice: invoiceProduct.productPurchasePrice || 0,
         productSalePrice: invoiceProduct.productSalePrice || 0,
@@ -57,29 +35,19 @@ export default function ProductAdd({
       })
     );
 
-    // Set the form fields
     form.setFieldsValue({
       purchaseInvoiceProduct: processedProducts,
-    });
-
-    console.log("processed products", processedProducts);
-
-    // Set form values with extracted data
-    form.setFieldsValue({
       date: data.date ? dayjs(data.date) : null,
       paidAmount: data.paidAmount || 0,
       discount: data.discount || 0,
       supplierId: data.supplierId || "",
       note: data.note || "",
       supplierMemoNo: data.supplierMemoNo || "",
-      purchaseInvoiceProduct: processedProducts, // Use processedProducts with productId
     });
 
-    // Trigger calculations for each product
     processedProducts.forEach((_, index) => totalCalculator(index));
   };
 
-  // Handle product initialization (keep your existing logic)
   const handleSetInitial = (product, serial) => {
     const productArray = form.getFieldValue("purchaseInvoiceProduct");
     const findProduct = productList.find((pro) => pro.id === product);
@@ -87,6 +55,8 @@ export default function ProductAdd({
       if (index === serial) {
         return {
           ...item,
+          productId: product,
+          productName: findProduct?.name || "",
           productQuantity: findProduct?.productQuantity ? 1 : 0,
           productSalePrice: findProduct?.productSalePrice || 0,
           productPurchasePrice: findProduct?.productPurchasePrice || 0,
@@ -103,15 +73,14 @@ export default function ProductAdd({
     totalCalculator(serial);
   };
 
-
-  
-  // Render product details (keep your existing logic)
   const render = (index) => {
-    const findId = form
-    
-      .getFieldValue("purchaseInvoiceProduct")
-      ?.find((_, i) => i === index)?.productId;
+    const formValues = form.getFieldValue("purchaseInvoiceProduct");
+    const currentProduct = formValues?.[index];
+    const findId = currentProduct?.productId;
     const findProduct = productList?.find((item) => findId === item.id);
+    
+    // Check if the current product name exists in the database
+    const isProductNameValid = validateProductName(currentProduct?.productName);
 
     let colors = null;
     if (
@@ -141,7 +110,7 @@ export default function ProductAdd({
       );
     }
 
-    return { stock, colors };
+    return { stock, colors, isProductNameValid };
   };
 
   return (
@@ -149,6 +118,7 @@ export default function ProductAdd({
       className="h-[calc(100vh-100px)]"
       headClass=""
       bodyClass="p-0"
+      extra={<InvoiceUpload onExtract={handleDataExtracted} />}
       title={<SearchForm form={form} totalCalculator={totalCalculator} />}
     >
       <Form.List
@@ -164,11 +134,7 @@ export default function ProductAdd({
           <>
             <div className="max-h-[calc(100vh-220px)] overflow-auto">
               <table className="w-full">
-                <thead
-                  className={
-                    "font-Popins text-black bg-tableHeaderBg border-gray-200 sticky top-0 z-10"
-                  }
-                >
+                <thead className="font-Popins text-black bg-tableHeaderBg border-gray-200 sticky top-0 z-10">
                   <tr>
                     <th className="py-2 pl-2 text-left">SL</th>
                     <th className="py-2 pl-2 text-left">Product</th>
@@ -183,7 +149,7 @@ export default function ProductAdd({
                 </thead>
                 <tbody className="bg-tableBg">
                   {fields.map(({ key, name, ...restField }, index) => {
-                    const indexedProduct = render(index);
+                    const { stock, colors, isProductNameValid } = render(index);
                     return (
                       <tr
                         key={key}
@@ -201,8 +167,10 @@ export default function ProductAdd({
                               {
                                 required: true,
                                 message: "Product is required",
-                              },
+                              }
                             ]}
+                            validateStatus={!isProductNameValid ? "error" : "success"}
+                            help={!isProductNameValid ? "Product not found in database" : ""}
                           >
                             <Select
                               placeholder="Select Product"
@@ -225,9 +193,10 @@ export default function ProductAdd({
                               ))}
                             </Select>
                           </Form.Item>
-                          <div className="px-2">{indexedProduct.colors}</div>
+                          <div className="px-2">{colors}</div>
                         </td>
 
+                        {/* Rest of the table cells */}
                         <td className="py-2 pl-2 align-top">
                           <Form.Item
                             {...restField}
@@ -247,7 +216,7 @@ export default function ProductAdd({
                               onChange={() => totalCalculator(index)}
                             />
                           </Form.Item>
-                          <div className="px-2">{indexedProduct.stock}</div>
+                          <div className="px-2">{stock}</div>
                         </td>
                         <td className="py-2 pl-2 align-top">
                           <Form.Item
@@ -356,8 +325,6 @@ export default function ProductAdd({
           </>
         )}
       </Form.List>
-
-      <InvoiceUpload onExtract={handleDataExtracted} />
     </Card>
-  );  
+  );
 }

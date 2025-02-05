@@ -24,7 +24,7 @@ export const loadProduct = createAsyncThunk(
     try {
       const query = queryGenerator(arg);
       const { data } = await axios.get(`product?${query}`);
-      console.log("product slice data", data)
+      
       return successHandler(data);
     } catch (error) {
       return errorHandler(error);

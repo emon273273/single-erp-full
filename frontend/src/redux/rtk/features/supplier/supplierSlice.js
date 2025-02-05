@@ -18,7 +18,7 @@ export const loadSuppliers = createAsyncThunk(
     try {
       const query = queryGenerator(arg);
       const { data } = await axios.get(`supplier?${query}`);
-      console.log("suppliyer data",data);
+     
       return successHandler(data);
     } catch (error) {
       return errorHandler(error);
