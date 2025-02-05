@@ -17,12 +17,13 @@ const InvoiceUpload = ({ onExtract }) => {
     setLoading(true);
 
     try {
-      // Convert image to base64
-      const base64Image = await convertToBase64(file);
+      // // Convert image to base64
+       const base64Image = await convertToBase64(file);
       console.log("Base64 Image:", base64Image);
 
       // Call Gemini API (or OpenAI API if needed)
       const extractedData = await callGeminiVisionAPI(base64Image);
+      //const extractedData = await callOpenAIVisionAPI(base64Image);
       console.log("Extracted Data:", extractedData);
 
       // Pass extracted data to parent component

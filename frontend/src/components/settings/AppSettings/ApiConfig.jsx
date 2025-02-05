@@ -1,5 +1,6 @@
 import {
-  loadApiConfig,  updateApiConfig,
+  loadApiConfig,
+  updateApiConfig,
 } from "@/redux/rtk/features/apiConfigAppsettings/apiConfigAppSettingsSlice";
 import { Button, Card, Form, Input } from "antd";
 import { useEffect, useState } from "react";

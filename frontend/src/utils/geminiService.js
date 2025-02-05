@@ -1,6 +1,29 @@
-const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+import axios from "axios";
+
+const fetchApiKey = async () => {
+  try {
+    const response = await axios.get("/api-config/1"); // Laravel backend endpoint
+    if (response.status !== 200 || !response.data.success) {
+      throw new Error("Failed to fetch API key from backend.");
+    }
+    console.log("API Key:", response.data.data.apiKey);
+    return response.data.data.apiKey; // Access API key from response
+  } catch (error) {
+    console.error("Error fetching API key:", error.response || error.message);
+    throw new Error("Unable to retrieve the API key.");
+  }
+};
+
+export default fetchApiKey;
+
+
+
 
 export const callGeminiVisionAPI = async (base64Image) => {
+
+  const apiKey = await fetchApiKey();
+  console.log("my api key........................",apiKey)
+
   const apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=" + apiKey;
 
   // Define system prompt

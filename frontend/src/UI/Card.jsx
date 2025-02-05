@@ -23,10 +23,10 @@ export default function Card({
             [headClass]: headClass,
           })}
         >
-          <h1 className='cartTitle text-base md:text-lg font-medium px-2 text-black/80'>
+          <h1 className="cartTitle text-base md:text-lg font-medium px-2 text-black/80">
             {title}
           </h1>
-          <div className='cartExtra flex gap-2 items-center'>{extra}</div>
+          <div className="cartExtra flex gap-2 items-center">{extra}</div>
         </div>
       )}
       <div className={cn("p-2", { [bodyClass]: bodyClass })}> {children}</div>
