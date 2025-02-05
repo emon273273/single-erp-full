@@ -60,7 +60,7 @@ export const textEditorFormats = [
   "background",
 ];
 
-const AddProduct = () => {
+const AddProduct = ({ catchprocessedproduct }) => {
   const subCategory = useSelector((state) => state.productSubCategories?.list);
   const brand = useSelector((state) => state.productBrands?.list);
   const attribute = useSelector((state) => state.productAttribute?.list);
@@ -100,6 +100,7 @@ const AddProduct = () => {
   // Quill modules to add features like toolbar, image upload, etc.
 
   const [shippingChargeComment, setShippingChargeComment] = useState("");
+  const [productNames, setProductsList] = useState([]);
   const handleText = (e) => {
     e.preventDefault();
     setShippingChargeComment(e.target.value);
@@ -261,357 +262,421 @@ const AddProduct = () => {
       help: "Validating Sku...",
     };
   }
+
+  console.log("catchprocessproduct.............", catchprocessedproduct);
+
+  useEffect(() => {
+    if (catchprocessedproduct?.length > 0) {
+      // Remove .purchaseInvoiceProduct since data is direct array
+      const productNames = catchprocessedproduct.map((product) => ({
+        name: product.productName,
+      }));
+
+      setProductsList(productNames);
+
+      // Store all product names in state or context for use in dropdown/select
+      // You can create a new state for this
+      setProductsList(productNames); // You'll need to create this state
+
+      // Optionally, if you still want to set form values:
+    }
+  }, [catchprocessedproduct, form]);
+
+  console.log("emonnnnnnnnnnnnnn", productNames);
   return (
     <>
-      <Form
-        form={form}
-        name="basic"
-        layout="vertical"
-        className="sm:mx-10"
-        initialValues={{
-          remember: true,
-        }}
-        onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
-        autoComplete="off">
-        <Form.Item
-          style={{ marginBottom: "15px" }}
-          label="Name"
-          name="name"
-          rules={[
-            {
-              required: true,
-              message: "Please input Product name!",
-            },
-          ]}>
-          <Input />
-        </Form.Item>
-        <div className="flex flex-col sm:flex-row gap-3">
-          <Form.Item
-            style={{ marginBottom: "15px" }}
-            name="productSubCategoryId"
-            className="w-full sm:w-1/2"
-            label={
-              <>
-                Subcategory
-                <BigDrawer title={"Sub Category"}>
-                  <AddProductCategory drawer={true} />
-                </BigDrawer>
-              </>
-            }>
-            <Select
-              name="productSubCategoryId"
-              loading={!subCategory}
-              showSearch
-              placeholder="Select Subcategory"
-              optionFilterProp="children"
-              filterOption={(input, option) => option.children.includes(input)}
-              filterSort={(optionA, optionB) =>
-                optionA.children
-                  .toLowerCase()
-                  .localeCompare(optionB.children.toLowerCase())
-              }
-              onChange={prodSubCatHandler}>
-              {subCategory &&
-                subCategory.map((subcat) => (
-                  <Select.Option key={subcat.id} value={subcat.id}>
-                    {subcat.name}
-                  </Select.Option>
-                ))}
-            </Select>
-          </Form.Item>
-
-          <Form.Item
-            style={{ marginBottom: "15px" }}
-            name="productBrandId"
-            className="w-full sm:w-1/2"
-            label={
-              <>
-                Brand
-                <BigDrawer title="new Brand">
-                  <AddProductBrand drawer={true} />
-                </BigDrawer>
-              </>
-            }>
-            <Select
-              name="productBrandId"
-              loading={!brand}
-              showSearch
-              placeholder="Select Brand"
-              optionFilterProp="children"
-              filterOption={(input, option) => option.children.includes(input)}
-              filterSort={(optionA, optionB) =>
-                optionA.children
-                  .toLowerCase()
-                  .localeCompare(optionB.children.toLowerCase())
-              }
-              onChange={prodBrandHandler}>
-              {brand &&
-                brand.map((brandSingle) => (
-                  <Select.Option key={brandSingle.id} value={brandSingle.id}>
-                    {brandSingle.name}
-                  </Select.Option>
-                ))}
-            </Select>
-          </Form.Item>
-        </div>
-        <div className="flex flex-col sm:flex-row gap-3">
-          <Form.Item
-            style={{ marginBottom: "15px" }}
-            name="uomId"
-            className="w-full sm:w-1/2"
-            label={
-              <>
-                UoM
-                <BigDrawer title={"UoM"}>
-                  <AddUoM />
-                </BigDrawer>
-              </>
-            }>
-            <Select
-              name="uomId"
-              loading={uomLoading}
-              showSearch
-              placeholder="Select UoM "
-              optionFilterProp="children"
-              filterOption={(input, option) => option.children.includes(input)}
-              filterSort={(optionA, optionB) =>
-                optionA.children
-                  .toLowerCase()
-                  .localeCompare(optionB.children.toLowerCase())
-              }>
-              {uomList &&
-                uomList.map((uom) => (
-                  <Select.Option key={uom} value={uom?.id}>
-                    {uom?.name}
-                  </Select.Option>
-                ))}
-            </Select>
-          </Form.Item>
-
-          <Form.Item
-            style={{ marginBottom: "15px" }}
-            label="UoM Value"
-            name="uomValue"
-            className="w-full sm:w-1/2">
-            <Input type="number" />
-          </Form.Item>
-        </div>
-        <div className="flex flex-col sm:flex-row gap-3">
-          <Form.Item
-            style={{ marginBottom: "15px" }}
-            label="Sale Price"
-            className="w-full sm:w-1/2"
-            name="productSalePrice">
-            <Input type="number" />
-          </Form.Item>
-
-          <Form.Item
-            style={{ marginBottom: "15px" }}
-            label="Reorder Quantity"
-            className="w-full sm:w-1/2"
-            name="reorderQuantity">
-            <InputNumber size="small" />
-          </Form.Item>
-        </div>
-        <div className="flex flex-col sm:flex-row gap-3">
-          <Form.Item
-            style={{ marginBottom: "15px" }}
-            label="SKU No"
-            name="sku"
-            className="w-full sm:w-1/2"
-            hasFeedback
-            required
-            {...props}
-            rules={[
-              {
-                validator: () => {
-                  return new Promise((resolve, reject) => {
-                    if (SKUValid === "true") {
-                      reject("This Sku already in use!");
-                    } else if (SKUValid === "false") {
-                      resolve();
-                    } else {
-                      reject("Please enter the Sku!");
-                    }
-                  });
-                },
-              },
-            ]}>
-            <Input onChange={onChange} />
-          </Form.Item>
-          {color?.length && (
+      {productNames.map((product, index) => {
+        return (
+          <Form
+            form={form}
+            key={index}
+            name={`form_${index}`}
+            layout="vertical"
+            className="sm:mx-10"
+            initialValues={{
+              remember: true,
+              [`productname_${index}`]: product.name,
+            }}
+            
+            onFinish={onFinish}
+            onFinishFailed={onFinishFailed}
+            autoComplete="off"
+          >
             <Form.Item
               style={{ marginBottom: "15px" }}
-              label="Colors"
-              className="w-full sm:w-1/2">
-              <ColorDropdown
-                data={color}
-                selectedColors={selectedColors}
-                colorsHandler={colorsHandler}
+              label="Name"
+              name={`productname_${index}`}
+              rules={[
+                {
+                  required: true,
+                  message: "Please input Product name!",
+                },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Form.Item
+                style={{ marginBottom: "15px" }}
+                name="productSubCategoryId"
+                className="w-full sm:w-1/2"
+                label={
+                  <>
+                    Subcategory
+                    <BigDrawer title={"Sub Category"}>
+                      <AddProductCategory drawer={true} />
+                    </BigDrawer>
+                  </>
+                }
+              >
+                <Select
+                  name="productSubCategoryId"
+                  loading={!subCategory}
+                  showSearch
+                  placeholder="Select Subcategory"
+                  optionFilterProp="children"
+                  filterOption={(input, option) =>
+                    option.children.includes(input)
+                  }
+                  filterSort={(optionA, optionB) =>
+                    optionA.children
+                      .toLowerCase()
+                      .localeCompare(optionB.children.toLowerCase())
+                  }
+                  onChange={prodSubCatHandler}
+                >
+                  {subCategory &&
+                    subCategory.map((subcat) => (
+                      <Select.Option key={subcat.id} value={subcat.id}>
+                        {subcat.name}
+                      </Select.Option>
+                    ))}
+                </Select>
+              </Form.Item>
+
+              <Form.Item
+                style={{ marginBottom: "15px" }}
+                name="productBrandId"
+                className="w-full sm:w-1/2"
+                label={
+                  <>
+                    Brand
+                    <BigDrawer title="new Brand">
+                      <AddProductBrand drawer={true} />
+                    </BigDrawer>
+                  </>
+                }
+              >
+                <Select
+                  name="productBrandId"
+                  loading={!brand}
+                  showSearch
+                  placeholder="Select Brand"
+                  optionFilterProp="children"
+                  filterOption={(input, option) =>
+                    option.children.includes(input)
+                  }
+                  filterSort={(optionA, optionB) =>
+                    optionA.children
+                      .toLowerCase()
+                      .localeCompare(optionB.children.toLowerCase())
+                  }
+                  onChange={prodBrandHandler}
+                >
+                  {brand &&
+                    brand.map((brandSingle) => (
+                      <Select.Option
+                        key={brandSingle.id}
+                        value={brandSingle.id}
+                      >
+                        {brandSingle.name}
+                      </Select.Option>
+                    ))}
+                </Select>
+              </Form.Item>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Form.Item
+                style={{ marginBottom: "15px" }}
+                name="uomId"
+                className="w-full sm:w-1/2"
+                label={
+                  <>
+                    UoM
+                    <BigDrawer title={"UoM"}>
+                      <AddUoM />
+                    </BigDrawer>
+                  </>
+                }
+              >
+                <Select
+                  name="uomId"
+                  loading={uomLoading}
+                  showSearch
+                  placeholder="Select UoM "
+                  optionFilterProp="children"
+                  filterOption={(input, option) =>
+                    option.children.includes(input)
+                  }
+                  filterSort={(optionA, optionB) =>
+                    optionA.children
+                      .toLowerCase()
+                      .localeCompare(optionB.children.toLowerCase())
+                  }
+                >
+                  {uomList &&
+                    uomList.map((uom) => (
+                      <Select.Option key={uom} value={uom?.id}>
+                        {uom?.name}
+                      </Select.Option>
+                    ))}
+                </Select>
+              </Form.Item>
+
+              <Form.Item
+                style={{ marginBottom: "15px" }}
+                label="UoM Value"
+                name="uomValue"
+                className="w-full sm:w-1/2"
+              >
+                <Input type="number" />
+              </Form.Item>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Form.Item
+                style={{ marginBottom: "15px" }}
+                label="Sale Price"
+                className="w-full sm:w-1/2"
+                name="productSalePrice"
+              >
+                <Input type="number" />
+              </Form.Item>
+
+              <Form.Item
+                style={{ marginBottom: "15px" }}
+                label="Reorder Quantity"
+                className="w-full sm:w-1/2"
+                name="reorderQuantity"
+              >
+                <InputNumber size="small" />
+              </Form.Item>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Form.Item
+                style={{ marginBottom: "15px" }}
+                label="SKU No"
+                name="sku"
+                className="w-full sm:w-1/2"
+                hasFeedback
+                required
+                {...props}
+                rules={[
+                  {
+                    validator: () => {
+                      return new Promise((resolve, reject) => {
+                        if (SKUValid === "true") {
+                          reject("This Sku already in use!");
+                        } else if (SKUValid === "false") {
+                          resolve();
+                        } else {
+                          reject("Please enter the Sku!");
+                        }
+                      });
+                    },
+                  },
+                ]}
+              >
+                <Input onChange={onChange} />
+              </Form.Item>
+              {color?.length && (
+                <Form.Item
+                  style={{ marginBottom: "15px" }}
+                  label="Colors"
+                  className="w-full sm:w-1/2"
+                >
+                  <ColorDropdown
+                    data={color}
+                    selectedColors={selectedColors}
+                    colorsHandler={colorsHandler}
+                  />
+                </Form.Item>
+              )}
+            </div>
+            {attribute?.length ? (
+              <Form.Item style={{ marginBottom: "15px" }} label="Attributes">
+                <AttributesDropdown
+                  data={attribute}
+                  attributes={selectedAttributes}
+                  attributesHandler={attributesHandler}
+                />
+              </Form.Item>
+            ) : (
+              <Form.Item style={{ marginBottom: "15px" }} label="Attributes">
+                <Select />
+              </Form.Item>
+            )}
+            {selectedAttributes?.map((item) => (
+              <Form.Item
+                key={item.id}
+                style={{ marginBottom: "15px" }}
+                label={item.name}
+                name={item.name.toLowerCase()}
+              >
+                <AttributeValueDropdown
+                  name={item.name}
+                  data={item.productAttributeValue}
+                  attributeValueHandler={attributeValueHandler}
+                  attributeValue={attributeValue}
+                />
+              </Form.Item>
+            ))}
+            <div className="flex gap-3">
+              <Form.Item
+                label="Images"
+                valuePropName="gallery_image"
+                className="w-full"
+                tooltip="First image will be used as product Thumbnail image. Maximum number of images is 9 and each image should be less than 2MB."
+              >
+                <Upload
+                  listType="picture-card"
+                  beforeUpload={() => false}
+                  name="image"
+                  fileList={galleryFileList}
+                  maxCount={9}
+                  multiple
+                  onChange={handelGalleryImageChange}
+                  accept="image/png, image/jpg, image/jpeg"
+                >
+                  <div>
+                    <PlusOutlined />
+                    <div
+                      style={{
+                        marginTop: 8,
+                      }}
+                    >
+                      Upload
+                    </div>
+                  </div>
+                </Upload>
+              </Form.Item>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Form.Item
+                style={{ marginBottom: "15px" }}
+                label={
+                  <>
+                    Discount
+                    <BigDrawer title={"Discount"}>
+                      <AddDiscount />
+                    </BigDrawer>
+                  </>
+                }
+                className="w-full sm:w-1/2"
+                name="discountId"
+              >
+                <Select
+                  name="discountId"
+                  loading={!brand}
+                  showSearch
+                  placeholder="Select discount"
+                  optionFilterProp="children"
+                  filterOption={(input, option) =>
+                    option.children.includes(input)
+                  }
+                  filterSort={(optionA, optionB) =>
+                    optionA.children
+                      .toLowerCase()
+                      .localeCompare(optionB.children.toLowerCase())
+                  }
+                  onChange={prodBrandHandler}
+                  allowClear
+                >
+                  {discount &&
+                    discount.map((discountSingle) => (
+                      <Select.Option
+                        key={discountSingle.id}
+                        value={discountSingle.id}
+                      >
+                        {`${
+                          discountSingle.type == "percentage"
+                            ? `${discountSingle.value}%`
+                            : `Flat ${discountSingle.value}`
+                        }`}
+                      </Select.Option>
+                    ))}
+                </Select>
+              </Form.Item>
+              {vatTaxList && (
+                <Form.Item
+                  style={{ marginBottom: "15px" }}
+                  label={
+                    <>
+                      Vat/Tax
+                      <BigDrawer title={"Vat/Tax"}>
+                        <AddVatTax />
+                      </BigDrawer>
+                    </>
+                  }
+                  className="w-full sm:w-1/2"
+                  name="productVat"
+                >
+                  <Select
+                    allowClear
+                    placeholder="Select Vat/Tax type"
+                    loading={vatTaxLoading}
+                  >
+                    {vatTaxList?.map((item) => (
+                      <Select.Option key={item.id} value={item.id}>
+                        {item.title}
+                        <span className="italic">@{item.percentage}%</span>
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              )}
+            </div>
+            {/* <Form.Item
+  style={{ marginBottom: "15px" }}
+  label='Delivery Charge warning'
+  name='shippingChargeComment'
+>
+  <Input.TextArea
+    onChange={handleText}
+    onKeyPress={handleTextareaKeyDown}
+    rows={3}
+    className='w-full resize-none '
+    placeholder='Write comment here...'
+  />
+</Form.Item> */}
+            {/* make a description item in form */}
+            <Form.Item
+              style={{ marginBottom: "25px" }}
+              label="Product Description "
+            >
+              <ReactQuill
+                value={prodDescription}
+                onChange={prodDescriptionHandler}
+                modules={textEditorModule}
+                formats={textEditorFormats}
               />
             </Form.Item>
-          )}
-        </div>
-        {attribute?.length ? (
-          <Form.Item style={{ marginBottom: "15px" }} label="Attributes">
-            <AttributesDropdown
-              data={attribute}
-              attributes={selectedAttributes}
-              attributesHandler={attributesHandler}
-            />
-          </Form.Item>
-        ) : (
-          <Form.Item style={{ marginBottom: "15px" }} label="Attributes">
-            <Select />
-          </Form.Item>
-        )}
-        {selectedAttributes?.map((item) => (
-          <Form.Item
-            key={item.id}
-            style={{ marginBottom: "15px" }}
-            label={item.name}
-            name={item.name.toLowerCase()}>
-            <AttributeValueDropdown
-              name={item.name}
-              data={item.productAttributeValue}
-              attributeValueHandler={attributeValueHandler}
-              attributeValue={attributeValue}
-            />
-          </Form.Item>
-        ))}
-        <div className="flex gap-3">
-          <Form.Item
-            label="Images"
-            valuePropName="gallery_image"
-            className="w-full"
-            tooltip="First image will be used as product Thumbnail image. Maximum number of images is 9 and each image should be less than 2MB.">
-            <Upload
-              listType="picture-card"
-              beforeUpload={() => false}
-              name="image"
-              fileList={galleryFileList}
-              maxCount={9}
-              multiple
-              onChange={handelGalleryImageChange}
-              accept="image/png, image/jpg, image/jpeg">
-              <div>
-                <PlusOutlined />
-                <div
-                  style={{
-                    marginTop: 8,
-                  }}>
-                  Upload
-                </div>
-              </div>
-            </Upload>
-          </Form.Item>
-        </div>
-
-        <div className="flex flex-col sm:flex-row gap-3">
-          <Form.Item
-            style={{ marginBottom: "15px" }}
-            label={
-              <>
-                Discount
-                <BigDrawer title={"Discount"}>
-                  <AddDiscount />
-                </BigDrawer>
-              </>
-            }
-            className="w-full sm:w-1/2"
-            name="discountId">
-            <Select
-              name="discountId"
-              loading={!brand}
-              showSearch
-              placeholder="Select discount"
-              optionFilterProp="children"
-              filterOption={(input, option) => option.children.includes(input)}
-              filterSort={(optionA, optionB) =>
-                optionA.children
-                  .toLowerCase()
-                  .localeCompare(optionB.children.toLowerCase())
-              }
-              onChange={prodBrandHandler}
-              allowClear>
-              {discount &&
-                discount.map((discountSingle) => (
-                  <Select.Option
-                    key={discountSingle.id}
-                    value={discountSingle.id}>
-                    {`${
-                      discountSingle.type == "percentage"
-                        ? `${discountSingle.value}%`
-                        : `Flat ${discountSingle.value}`
-                    }`}
-                  </Select.Option>
-                ))}
-            </Select>
-          </Form.Item>
-          {vatTaxList && (
             <Form.Item
               style={{ marginBottom: "15px" }}
-              label={
-                <>
-                  Vat/Tax
-                  <BigDrawer title={"Vat/Tax"}>
-                    <AddVatTax />
-                  </BigDrawer>
-                </>
-              }
-              className="w-full sm:w-1/2"
-              name="productVat">
-              <Select
-                allowClear
-                placeholder="Select Vat/Tax type"
-                loading={vatTaxLoading}>
-                {vatTaxList?.map((item) => (
-                  <Select.Option key={item.id} value={item.id}>
-                    {item.title}
-                    <span className="italic">@{item.percentage}%</span>
-                  </Select.Option>
-                ))}
-              </Select>
+              className="flex justify-center mt-[24px]"
+            >
+              <Button
+                type="primary"
+                htmlType="submit"
+                shape="round"
+                loading={loader}
+              >
+                Create Product
+              </Button>
             </Form.Item>
-          )}
-        </div>
-        {/* <Form.Item
-          style={{ marginBottom: "15px" }}
-          label='Delivery Charge warning'
-          name='shippingChargeComment'
-        >
-          <Input.TextArea
-            onChange={handleText}
-            onKeyPress={handleTextareaKeyDown}
-            rows={3}
-            className='w-full resize-none '
-            placeholder='Write comment here...'
-          />
-        </Form.Item> */}
-        {/* make a description item in form */}
-        <Form.Item
-          style={{ marginBottom: "25px" }}
-          label="Product Description ">
-          <ReactQuill
-            value={prodDescription}
-            onChange={prodDescriptionHandler}
-            modules={textEditorModule}
-            formats={textEditorFormats}
-          />
-        </Form.Item>
-        <Form.Item
-          style={{ marginBottom: "15px" }}
-          className="flex justify-center mt-[24px]">
-          <Button
-            type="primary"
-            htmlType="submit"
-            shape="round"
-            loading={loader}>
-            Create Product
-          </Button>
-        </Form.Item>
-      </Form>
+          </Form>
+        );
+      })}
     </>
   );
 };

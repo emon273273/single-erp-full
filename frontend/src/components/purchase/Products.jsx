@@ -1,11 +1,14 @@
 import Button from "@/UI/Button";
 import { PlusOutlined } from "@ant-design/icons";
-import { Form, InputNumber, Select } from "antd";
+import { Form, InputNumber } from "antd";
 import dayjs from "dayjs";
 import { CiCircleRemove } from "react-icons/ci";
 import Card from "../../UI/Card";
+import AddProduct from "../product/AddProduct";
 import InvoiceUpload from "./InvoiceUpload";
 import SearchForm from "./SearchForm";
+import SelectAntd from "./SelectAntd";
+import { useState } from "react";
 
 export default function ProductAdd({
   form,
@@ -14,10 +17,11 @@ export default function ProductAdd({
   totalCalculator,
   subTotal,
 }) {
-  // Simple validation function to check if product exists in database
+
+  const [catchprocessedproduct, setProcessedProducts] = useState([]);
   const validateProductName = (nameToCheck) => {
     if (!nameToCheck) return true;
-    return productList.some(product => product.name === nameToCheck);
+    return productList.some((product) => product.name === nameToCheck);
   };
 
   const handleDataExtracted = (data) => {
@@ -34,6 +38,8 @@ export default function ProductAdd({
         tax: invoiceProduct.taxPercentage || 0,
       })
     );
+
+    setProcessedProducts(processedProducts)
 
     form.setFieldsValue({
       purchaseInvoiceProduct: processedProducts,
@@ -78,7 +84,7 @@ export default function ProductAdd({
     const currentProduct = formValues?.[index];
     const findId = currentProduct?.productId;
     const findProduct = productList?.find((item) => findId === item.id);
-    
+
     // Check if the current product name exists in the database
     const isProductNameValid = validateProductName(currentProduct?.productName);
 
@@ -167,31 +173,31 @@ export default function ProductAdd({
                               {
                                 required: true,
                                 message: "Product is required",
-                              }
+                              },
                             ]}
-                            validateStatus={!isProductNameValid ? "error" : "success"}
-                            help={!isProductNameValid ? "Product not found in database" : ""}
+                            validateStatus={
+                              !isProductNameValid ? "error" : "success"
+                            }
+                            help={
+                              !isProductNameValid
+                                ? "Product not found in database"
+                                : ""
+                            }
                           >
-                            <Select
-                              placeholder="Select Product"
-                              showSearch
-                              loading={productLoading}
-                              optionFilterProp="children"
-                              filterOption={(input, option) =>
-                                option.children
-                                  .toLowerCase()
-                                  .includes(input.toLowerCase())
-                              }
-                              onChange={(product) => {
-                                handleSetInitial(product, index);
+                            <SelectAntd
+                              className="w-full"
+                              placeholder="Select Prodcut"
+                              options={productList?.map((type) => ({
+                                label: type.name,
+                                value: type.id,
+                              }))}
+                              addNew={{
+                                title: "Add Asset Type",
+                                component: <AddProduct isModal={true} catchprocessedproduct={catchprocessedproduct} />,
+                                className: "md:w-[60%]",
+                                zIndex: 1050,
                               }}
-                            >
-                              {productList?.map((item) => (
-                                <Select.Option key={item.id} value={item.id}>
-                                  {item.name}
-                                </Select.Option>
-                              ))}
-                            </Select>
+                            />
                           </Form.Item>
                           <div className="px-2">{colors}</div>
                         </td>
