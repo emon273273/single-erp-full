@@ -38,14 +38,18 @@ const AddPurchase = () => {
 
   const onFormSubmit = async (values) => {
     try {
+      const purchaseInvoiceProduct = form.getFieldValue(
+        "purchaseInvoiceProduct"
+      );
 
-      const mergedObject = values.purchaseInvoiceProduct.reduce(
+      const mergedObject = purchaseInvoiceProduct?.reduce(
         (accumulator, currentObject) => {
-          const productId = currentObject.productId;
-          if (!accumulator[productId]) {
-            accumulator[productId] = { ...currentObject };
+          const productName = currentObject.productName;
+          const supplierName=currentObject.supplierName
+          if (!accumulator[productName]) {
+            accumulator[productName] = { ...currentObject };
           } else {
-            accumulator[productId].productQuantity +=
+            accumulator[productName].productQuantity +=
               currentObject.productQuantity;
           }
           return accumulator;
@@ -53,24 +57,30 @@ const AddPurchase = () => {
         {}
       );
       const mergedArray = Object.values(mergedObject);
-
+      console.log("merged array",mergedArray)
+      
       const newArray = mergedArray.map((product) => {
-        
+        const productId = productList.find(
+          (p) => p.name.toLowerCase() === product.productName?.toLowerCase()
+        )?.id;
+
         return {
           ...product,
-          productId: product.productId,
+          productId,
           productQuantity: product.productQuantity,
           productUnitPurchasePrice: product.productPurchasePrice,
           productUnitSalePrice: product.productSalePrice,
           tax: product.tax,
+          
         };
       });
-
+      console.log(values);
       const data = {
         ...values,
         purchaseInvoiceProduct: newArray,
         paidAmount: values.paidAmount || [],
       };
+
       const resp = await dispatch(addPurchase(data));
       if (resp.payload.message === "success") {
         form.resetFields();
@@ -80,6 +90,7 @@ const AddPurchase = () => {
         setLoader(false);
       }
     } catch (error) {
+      console.log(error);
       setLoader(false);
     }
   };
@@ -125,29 +136,29 @@ const AddPurchase = () => {
   return (
     <Form
       form={form}
-      className='w-full '
-      name='dynamic_form_nest_item'
+      className="w-full "
+      name="dynamic_form_nest_item"
       onFinish={onFormSubmit}
       onFinishFailed={() => {
         setLoader(false);
       }}
-      layout='vertical'
-      size='large'
+      layout="vertical"
+      size="large"
       onKeyDown={(e) => {
         if (e.key === "Enter") {
           e.preventDefault();
         }
       }}
-      autoComplete='off'
+      autoComplete="off"
       initialValues={{
-        paidAmount: 0,
-        discount: 0,
+        paidAmount: [],
+
         date: dayjs(),
         purchaseInvoiceProduct: [{}],
       }}
     >
-      <div className='flex gap-4 2xl:h-[calc(100vh-100px)] min-h-[500px]'>
-        <div className='w-[70%] 2xl:w-[75%]'>
+      <div className="flex gap-4 2xl:h-[calc(100vh-100px)] min-h-[500px]">
+        <div className="w-[70%] 2xl:w-[75%]">
           <Products
             totalCalculator={totalCalculator}
             subTotal={subTotal}
@@ -156,20 +167,20 @@ const AddPurchase = () => {
             productLoading={productLoading}
           />
         </div>
-        <div className='flex flex-col w-[30%] 2xl:w-[25%]'>
-          <div className='flex-grow'>
-            <div className='w-full'>
+        <div className="flex flex-col w-[30%] 2xl:w-[25%]">
+          <div className="flex-grow">
+            <div className="w-full">
               <Form.Item
                 label={
                   <>
                     Supplier{" "}
-                    <BigDrawer className='' title='Add New Supplier'>
+                    <BigDrawer className="" title="Add New Supplier">
                       <AddSup drawer={true} />
                     </BigDrawer>
                   </>
                 }
-                name='supplierId'
-                className='w-full mb-0'
+                name="supplierId"
+                className="w-full mb-0"
                 rules={[
                   {
                     required: true,
@@ -178,12 +189,12 @@ const AddPurchase = () => {
                 ]}
               >
                 <Select
-                  className='w-full'
+                  className="w-full"
                   loading={!allSuppliers}
                   onChange={(id) => setSelectedSupplier(id)}
                   showSearch
-                  placeholder='Select a supplier '
-                  optionFilterProp='children'
+                  placeholder="Select a supplier "
+                  optionFilterProp="children"
                   filterOption={(input, option) =>
                     option.children.toLowerCase().includes(input.toLowerCase())
                   }
@@ -197,7 +208,7 @@ const AddPurchase = () => {
                 </Select>
               </Form.Item>
               {supplier && (
-                <div className='flex justify-between py-1 px-4'>
+                <div className="flex justify-between py-1 px-4">
                   <span>
                     <span>Address: </span>
                     <span>{supplier?.address}</span>{" "}
@@ -211,10 +222,10 @@ const AddPurchase = () => {
             </div>
 
             <Form.Item
-              name='date'
-              label='Date'
-              className='w-full mb-0'
-              layout='horizental'
+              name="date"
+              label="Date"
+              className="w-full mb-0"
+              layout="horizental"
               required
               rules={[
                 {
@@ -224,54 +235,54 @@ const AddPurchase = () => {
               ]}
             >
               <DatePicker
-                size='small'
+                size="small"
                 format={"YYYY-MM-DD"}
-                className='date-picker'
+                className="date-picker"
               />
             </Form.Item>
 
             <Form.Item
-              className='w-full mb-0'
-              name='supplierMemoNo'
-              label='Supplier Memo'
+              className="w-full mb-0"
+              name="supplierMemoNo"
+              label="Supplier Memo"
             >
-              <Input className='w-full' placeholder='Memo no ' />
+              <Input className="w-full" placeholder="Memo no " />
             </Form.Item>
 
-            <Form.Item className='w-full mb-0' name='note' label='Note'>
-              <Input className='w-full' placeholder='Note' />
+            <Form.Item className="w-full mb-0" name="note" label="Note">
+              <Input className="w-full" placeholder="Note" />
             </Form.Item>
           </div>
-          <div className='py-2'>
-            <div className=' flex justify-between'>
+          <div className="py-2">
+            <div className=" flex justify-between">
               <strong>Total amount: </strong>
               <strong>{total.toFixed(2)}</strong>
             </div>
 
-            <div className='py-1 flex justify-between items-center'>
+            <div className="py-1 flex justify-between items-center">
               <span>Total tax amount: </span>
               <span>{totalTaxAmount.toFixed(2)}</span>
             </div>
-            <div className='py-1 flex justify-between items-center'>
+            <div className="py-1 flex justify-between items-center">
               <strong>Total Payable: </strong>
               <strong>{totalPayable.toFixed(2)}</strong>
             </div>
 
-            <div className='py-1 mb-4 flex justify-between'>
+            <div className="py-1 mb-4 flex justify-between">
               <strong>Due Amount:</strong>
               <strong>{due.toFixed(2)}</strong>
             </div>
-            <div className='flex justify-between mb-2'>
-              <span className=''>Paid Amount: </span>
-              <div className='w-[65%] flex items-center justify-between gap-2'>
+            <div className="flex justify-between mb-2">
+              <span className="">Paid Amount: </span>
+              <div className="w-[65%] flex items-center justify-between gap-2">
                 <Payments totalCalculator={totalCalculator} />
               </div>
             </div>
             <Form.Item style={{ marginTop: "15px" }}>
               <Button
                 block
-                type='primary'
-                htmlType='submit'
+                type="primary"
+                htmlType="submit"
                 loading={loader}
                 onClick={() => setLoader(true)}
               >

@@ -6,7 +6,7 @@ const fetchApiKey = async () => {
     if (response.status !== 200 || !response.data.success) {
       throw new Error("Failed to fetch API key from backend.");
     }
-    console.log("API Key:", response.data.data.apiKey);
+    
     return response.data.data.apiKey; // Access API key from response
   } catch (error) {
     console.error("Error fetching API key:", error.response || error.message);
@@ -32,6 +32,7 @@ export const callGeminiVisionAPI = async (base64Image) => {
     {
       "date": "YYYY-MM-DDTHH:mm:ss.SSSZ",
       "paidAmount": number,
+      "SupplierName: string",
       "discount": number,
       "supplierId": number,
       "note": string,
@@ -51,6 +52,7 @@ export const callGeminiVisionAPI = async (base64Image) => {
 
     **Rules to follow strictly:**
     1. FIELD MAPPING:
+      - "supplierName" = "Supplier", "Company", "Name"
        - "productName" = "Item", "Product", "Description"
        - "productQuantity" = "Qty", "Quantity", "Units"
        - "productPurchasePrice" = "Cost", "Unit Price", "Purchase Price"

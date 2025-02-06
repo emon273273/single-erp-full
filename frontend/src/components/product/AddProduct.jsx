@@ -60,7 +60,7 @@ export const textEditorFormats = [
   "background",
 ];
 
-const AddProduct = ({ catchprocessedproduct }) => {
+const AddProduct = ({ product }) => {
   const subCategory = useSelector((state) => state.productSubCategories?.list);
   const brand = useSelector((state) => state.productBrands?.list);
   const attribute = useSelector((state) => state.productAttribute?.list);
@@ -263,39 +263,34 @@ const AddProduct = ({ catchprocessedproduct }) => {
     };
   }
 
-  console.log("catchprocessproduct.............", catchprocessedproduct);
+  
 
   useEffect(() => {
-    if (catchprocessedproduct?.length > 0) {
-      // Remove .purchaseInvoiceProduct since data is direct array
-      const productNames = catchprocessedproduct.map((product) => ({
-        name: product.productName,
-      }));
-
-      setProductsList(productNames);
-
-      // Store all product names in state or context for use in dropdown/select
-      // You can create a new state for this
-      setProductsList(productNames); // You'll need to create this state
-
-      // Optionally, if you still want to set form values:
+    
+    if(product){
+      form.setFieldsValue({
+        name: product,
+      });
     }
-  }, [catchprocessedproduct, form]);
 
-  console.log("emonnnnnnnnnnnnnn", productNames);
+     
+  }, [form, product]);
+
+ 
   return (
     <>
-      {productNames.map((product, index) => {
+      
+        
         return (
           <Form
             form={form}
-            key={index}
-            name={`form_${index}`}
+            
+           
             layout="vertical"
             className="sm:mx-10"
             initialValues={{
               remember: true,
-              [`productname_${index}`]: product.name,
+              
             }}
             
             onFinish={onFinish}
@@ -305,7 +300,7 @@ const AddProduct = ({ catchprocessedproduct }) => {
             <Form.Item
               style={{ marginBottom: "15px" }}
               label="Name"
-              name={`productname_${index}`}
+              name="name"
               rules={[
                 {
                   required: true,
@@ -676,7 +671,7 @@ const AddProduct = ({ catchprocessedproduct }) => {
             </Form.Item>
           </Form>
         );
-      })}
+     
     </>
   );
 };

@@ -19,13 +19,13 @@ const InvoiceUpload = ({ onExtract }) => {
     try {
       // // Convert image to base64
        const base64Image = await convertToBase64(file);
-      console.log("Base64 Image:", base64Image);
+    
 
       // Call Gemini API (or OpenAI API if needed)
       const extractedData = await callGeminiVisionAPI(base64Image);
       //const extractedData = await callOpenAIVisionAPI(base64Image);
-      console.log("Extracted Data:", extractedData);
 
+        console.log("extracted data from geminin",extractedData)
       // Pass extracted data to parent component
       if (onExtract) {
         onExtract(extractedData);
@@ -38,15 +38,30 @@ const InvoiceUpload = ({ onExtract }) => {
   };
 
   return (
-    <div>
-      <input
-        type="file"
-        accept="image/*"
-        onChange={handleFileChange}
-        disabled={loading}
-      />
-      {loading && <p>Processing image... Please wait.</p>}
-    </div>
+    <div >
+    <label
+      htmlFor="fileInput"
+      className={`flex items-center justify-center w-full px-4 py-2 text-white bg-blue-500 rounded-lg cursor-pointer hover:bg-blue-600 transition-all ${
+        loading ? "opacity-50 cursor-not-allowed" : ""
+      }`}
+    >
+      {loading ? "Processing..." : "Upload Image"}
+    </label>
+    <input
+      id="fileInput"
+      type="file"
+      accept="image/*"
+      className="hidden"
+      onChange={handleFileChange}
+      disabled={loading}
+    />
+    {loading && (
+      <p className="text-sm text-gray-500">
+        Processing image... Please wait.
+      </p>
+    )}
+  </div>
+  
   );
 };
 
