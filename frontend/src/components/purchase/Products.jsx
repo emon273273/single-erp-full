@@ -12,34 +12,39 @@ import SelectAntd from "./SelectAntd";
 export default function ProductAdd({
   form,
   productList,
-  productLoading,
   totalCalculator,
   subTotal,
 }) {
+  // const [isModalVisible, setIsModalVisible] = useState(false);
+  // const handleAddProductClick = () => {
+  //   setIsModalVisible(true); // Open ProductModal
+  // };
+
+  
   const handleDataExtracted = (data) => {
     if (!data) return;
-
+    console.log("data is ", data);
     const processedProducts = data.purchaseInvoiceProduct.map(
       (invoiceProduct) => ({
         key: invoiceProduct.id || Math.random(),
-        productId: null,
         productName: invoiceProduct.productName || "",
         productQuantity: invoiceProduct.productQuantity || 0,
         productPurchasePrice: invoiceProduct.productPurchasePrice || 0,
         productSalePrice: invoiceProduct.productSalePrice || 0,
         tax: invoiceProduct.taxPercentage || 0,
         isScaneed: true,
+        
       })
     );
 
     form.setFieldsValue({
       purchaseInvoiceProduct: processedProducts,
       date: data.date ? dayjs(data.date) : null,
-      paidAmount: data.paidAmount || 0,
-      discount: data.discount || 0,
       supplierId: data.supplierId || "",
       note: data.note || "",
       supplierMemoNo: data.supplierMemoNo || "",
+      SupplierName: data.SupplierName
+      || "",
     });
 
     totalCalculator();
@@ -47,7 +52,7 @@ export default function ProductAdd({
 
   const handleSetInitial = (product, serial) => {
     const productArray = form.getFieldValue("purchaseInvoiceProduct");
-    const findProduct = productList.find((pro) => pro.id === product);
+    const findProduct = productList.find((pro) => pro.name === product);
     const newArray = productArray.map((item, index) => {
       if (index === serial) {
         return {
@@ -73,8 +78,10 @@ export default function ProductAdd({
   const render = (index) => {
     const formValues = form.getFieldValue("purchaseInvoiceProduct");
     const currentProduct = formValues?.[index];
-    console.log(currentProduct);
 
+    
+    
+    const productId = currentProduct?.productId;
     const findName = currentProduct?.productName;
     const findProduct = productList?.find((item) => findName === item.name);
     let isProductNameValid = true;
@@ -118,6 +125,8 @@ export default function ProductAdd({
       findName,
       findProduct,
       isProductNameValid,
+      productId,
+      
     };
   };
 
@@ -157,13 +166,8 @@ export default function ProductAdd({
                 </thead>
                 <tbody className="bg-tableBg">
                   {fields.map(({ key, name, ...restField }, index) => {
-                    const {
-                      stock,
-                      colors,
-                      isProductNameValid,
-                      findName,
-                      isScanned,
-                    } = render(index);
+                    const { stock, colors, isProductNameValid, findName } =
+                      render(index);
                     return (
                       <tr
                         key={key}
@@ -186,21 +190,17 @@ export default function ProductAdd({
                             validateStatus={
                               !isProductNameValid ? "error" : "success"
                             }
-                            help={
-                              !isProductNameValid
-                                ? "Product not found in database"
-                                : ""
-                            }
+                            help={!isProductNameValid ? "Not Found" : null}
                           >
                             <SelectAntd
                               className="w-full"
                               placeholder="Select Prodcut"
                               options={productList?.map((type) => ({
                                 label: type.name,
-                                value: type.id,
+                                value: type.name,
                               }))}
                               addNew={{
-                                title: "Add Asset Type",
+                                title: "Please Wait",
                                 component: (
                                   <AddProduct
                                     isModal={true}
@@ -210,7 +210,28 @@ export default function ProductAdd({
                                 className: "md:w-[60%]",
                                 zIndex: 1050,
                               }}
+                              onChange={(value) => {
+                                handleSetInitial(value, index);
+                              }}
+                              ismatch={isProductNameValid}
                             />
+                            {/* <button
+        onClick={handleAddProductClick}
+        className="ml-2 text-blue-500 underline"
+      >
+        +
+      </button> */}
+
+                            {/* ProductModal Component triggered by the + button */}
+                            {/* <ProductModal
+        open={isModalVisible}
+        onClose={() => setIsModalVisible(false)}
+        title="Add New Product"
+        className="z-10 bg-white md:w-[60%]"
+        zIndex={1050}
+      >
+        <AddProduct isModal={false} product={findName} />
+      </ProductModal> */}
                           </Form.Item>
                           <div className="px-2">{colors}</div>
                         </td>

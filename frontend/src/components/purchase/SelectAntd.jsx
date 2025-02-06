@@ -3,9 +3,9 @@ import cn from "classnames";
 import { useState } from "react";
 import ProductModal from "./ProductModal";
 
-export default function SelectAntd({ addNew = {}, ...rest }) {
+export default function SelectAntd({ addNew = {}, ismatch,...rest}) {
   const [isModalVisible, setIsModalVisible] = useState(false);
-
+  
   const handleOpenModal = () => {
     setIsModalVisible(true);
   };
@@ -23,7 +23,7 @@ export default function SelectAntd({ addNew = {}, ...rest }) {
               onClick={handleOpenModal}
               className="px-4 w-full border-b py-1 cursor-pointer select-none"
             >
-              + Add New
+              {!ismatch && <div className=" text-center bg-primary"> Add New+</div>}
             </div>
             {menu}
           </>

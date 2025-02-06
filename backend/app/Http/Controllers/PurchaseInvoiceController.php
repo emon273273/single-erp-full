@@ -18,6 +18,7 @@ class PurchaseInvoiceController extends Controller
         try {
             $validate = Validator($request->all(), [
                 'date' => 'required|date',
+                // 'paidAmount'=>'required|array',
                 'purchaseInvoiceProduct' => 'required|array|min:1',
                 'purchaseInvoiceProduct.*.productId' => 'required|integer',
                 'purchaseInvoiceProduct.*.productQuantity' => 'required|integer',
