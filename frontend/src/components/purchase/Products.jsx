@@ -8,7 +8,6 @@ import AddProduct from "../product/AddProduct";
 import InvoiceUpload from "./InvoiceUpload";
 import SearchForm from "./SearchForm";
 import SelectAntd from "./SelectAntd";
-import { useState } from "react";
 
 export default function ProductAdd({
   form,
@@ -17,13 +16,6 @@ export default function ProductAdd({
   totalCalculator,
   subTotal,
 }) {
-
-  const [catchprocessedproduct, setProcessedProducts] = useState([]);
-  const validateProductName = (nameToCheck) => {
-    if (!nameToCheck) return true;
-    return productList.some((product) => product.name === nameToCheck);
-  };
-
   const handleDataExtracted = (data) => {
     if (!data) return;
 
@@ -36,10 +28,9 @@ export default function ProductAdd({
         productPurchasePrice: invoiceProduct.productPurchasePrice || 0,
         productSalePrice: invoiceProduct.productSalePrice || 0,
         tax: invoiceProduct.taxPercentage || 0,
+        isScaneed: true,
       })
     );
-
-    setProcessedProducts(processedProducts)
 
     form.setFieldsValue({
       purchaseInvoiceProduct: processedProducts,
@@ -51,7 +42,7 @@ export default function ProductAdd({
       supplierMemoNo: data.supplierMemoNo || "",
     });
 
-    processedProducts.forEach((_, index) => totalCalculator(index));
+    totalCalculator();
   };
 
   const handleSetInitial = (product, serial) => {
@@ -82,11 +73,16 @@ export default function ProductAdd({
   const render = (index) => {
     const formValues = form.getFieldValue("purchaseInvoiceProduct");
     const currentProduct = formValues?.[index];
-    const findId = currentProduct?.productId;
-    const findProduct = productList?.find((item) => findId === item.id);
+    console.log(currentProduct);
 
-    // Check if the current product name exists in the database
-    const isProductNameValid = validateProductName(currentProduct?.productName);
+    const findName = currentProduct?.productName;
+    const findProduct = productList?.find((item) => findName === item.name);
+    let isProductNameValid = true;
+    const { isScaneed } = currentProduct || {};
+
+    if (!findProduct && isScaneed) {
+      isProductNameValid = false;
+    }
 
     let colors = null;
     if (
@@ -116,7 +112,13 @@ export default function ProductAdd({
       );
     }
 
-    return { stock, colors, isProductNameValid };
+    return {
+      stock,
+      colors,
+      findName,
+      findProduct,
+      isProductNameValid,
+    };
   };
 
   return (
@@ -155,7 +157,13 @@ export default function ProductAdd({
                 </thead>
                 <tbody className="bg-tableBg">
                   {fields.map(({ key, name, ...restField }, index) => {
-                    const { stock, colors, isProductNameValid } = render(index);
+                    const {
+                      stock,
+                      colors,
+                      isProductNameValid,
+                      findName,
+                      isScanned,
+                    } = render(index);
                     return (
                       <tr
                         key={key}
@@ -193,7 +201,12 @@ export default function ProductAdd({
                               }))}
                               addNew={{
                                 title: "Add Asset Type",
-                                component: <AddProduct isModal={true} catchprocessedproduct={catchprocessedproduct} />,
+                                component: (
+                                  <AddProduct
+                                    isModal={true}
+                                    product={findName}
+                                  />
+                                ),
                                 className: "md:w-[60%]",
                                 zIndex: 1050,
                               }}
