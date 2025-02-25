@@ -1,7 +1,6 @@
 import Button from "@/UI/Button";
-import { callGeminiVisionAPI } from "@/utils/geminiService";
-import { callOpenAIVisionAPI } from "@/utils/openaiService";
 import { convertToBase64 } from "@/utils/imagetoBase64";
+import { callOpenAIVisionAPI } from "@/utils/openaiService";
 import { useState } from "react";
 
 const InvoiceUpload = ({ onExtract }) => {
@@ -18,14 +17,13 @@ const InvoiceUpload = ({ onExtract }) => {
 
     try {
       // // Convert image to base64
-       const base64Image = await convertToBase64(file);
-    
+      const base64Image = await convertToBase64(file);
 
       // Call Gemini API (or OpenAI API if needed)
-      const extractedData = await callGeminiVisionAPI(base64Image);
-      //const extractedData = await callOpenAIVisionAPI(base64Image);
+      //const extractedData = await callGeminiVisionAPI(base64Image);
+      const extractedData = await callOpenAIVisionAPI(base64Image);
 
-        console.log("extracted data from geminin",extractedData)
+      console.log("extracted data from openai", extractedData);
       // Pass extracted data to parent component
       if (onExtract) {
         onExtract(extractedData);
@@ -38,30 +36,29 @@ const InvoiceUpload = ({ onExtract }) => {
   };
 
   return (
-    <div >
-    <label
-      htmlFor="fileInput"
-      className={`flex items-center justify-center w-full px-4 py-2 text-white bg-blue-500 rounded-lg cursor-pointer hover:bg-blue-600 transition-all ${
-        loading ? "opacity-50 cursor-not-allowed" : ""
-      }`}
-    >
-      {loading ? "Processing..." : "Upload Image"}
-    </label>
-    <input
-      id="fileInput"
-      type="file"
-      accept="image/*"
-      className="hidden"
-      onChange={handleFileChange}
-      disabled={loading}
-    />
-    {loading && (
-      <p className="text-sm text-gray-500">
-        Processing image... Please wait.
-      </p>
-    )}
-  </div>
-  
+    <div>
+      <Button
+        color="primary"
+        loading={loading}
+        onClick={() => {
+          if (!loading) {
+            document.getElementById("fileInput").click();
+          }
+        }}
+        disabled={loading}
+      >
+        {loading ? "Processing..." : "Upload Image"}
+      </Button>
+
+      <input
+        id="fileInput"
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={handleFileChange}
+        disabled={loading}
+      />
+    </div>
   );
 };
 

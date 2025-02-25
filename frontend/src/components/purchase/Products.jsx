@@ -20,7 +20,6 @@ export default function ProductAdd({
   //   setIsModalVisible(true); // Open ProductModal
   // };
 
-  
   const handleDataExtracted = (data) => {
     if (!data) return;
     console.log("data is ", data);
@@ -33,7 +32,6 @@ export default function ProductAdd({
         productSalePrice: invoiceProduct.productSalePrice || 0,
         tax: invoiceProduct.taxPercentage || 0,
         isScaneed: true,
-        
       })
     );
 
@@ -43,8 +41,7 @@ export default function ProductAdd({
       supplierId: data.supplierId || "",
       note: data.note || "",
       supplierMemoNo: data.supplierMemoNo || "",
-      SupplierName: data.SupplierName
-      || "",
+      SupplierName: data.SupplierName || "",
     });
 
     totalCalculator();
@@ -79,8 +76,6 @@ export default function ProductAdd({
     const formValues = form.getFieldValue("purchaseInvoiceProduct");
     const currentProduct = formValues?.[index];
 
-    
-    
     const productId = currentProduct?.productId;
     const findName = currentProduct?.productName;
     const findProduct = productList?.find((item) => findName === item.name);
@@ -126,7 +121,6 @@ export default function ProductAdd({
       findProduct,
       isProductNameValid,
       productId,
-      
     };
   };
 
@@ -215,23 +209,6 @@ export default function ProductAdd({
                               }}
                               ismatch={isProductNameValid}
                             />
-                            {/* <button
-        onClick={handleAddProductClick}
-        className="ml-2 text-blue-500 underline"
-      >
-        +
-      </button> */}
-
-                            {/* ProductModal Component triggered by the + button */}
-                            {/* <ProductModal
-        open={isModalVisible}
-        onClose={() => setIsModalVisible(false)}
-        title="Add New Product"
-        className="z-10 bg-white md:w-[60%]"
-        zIndex={1050}
-      >
-        <AddProduct isModal={false} product={findName} />
-      </ProductModal> */}
                           </Form.Item>
                           <div className="px-2">{colors}</div>
                         </td>

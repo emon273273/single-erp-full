@@ -3,6 +3,8 @@ import axios from "axios";
 const fetchApiKey = async () => {
   try {
     const response = await axios.get("/api-config/1"); // Laravel backend endpoint
+
+    console.log(response)
     if (response.status !== 200 || !response.data.success) {
       throw new Error("Failed to fetch API key from backend.");
     }
