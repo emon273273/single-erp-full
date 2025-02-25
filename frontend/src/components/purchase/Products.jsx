@@ -22,7 +22,7 @@ export default function ProductAdd({
   const handleDataExtracted = (data) => {
     if (!data) return;
 
-    console.log(data);
+ 
 
     setSelectedSupplier(data.supplierName);
     setSelectedSupplierAddress(data.supplierAddress);
@@ -135,7 +135,9 @@ export default function ProductAdd({
       className="h-[calc(100vh-100px)]"
       headClass=""
       bodyClass="p-0"
-      extra={<><InvoiceUpload onExtract={handleDataExtracted} /><CustomInvoiceDownload></CustomInvoiceDownload></>}
+      extra={<>
+      <CustomInvoiceDownload/>
+      <InvoiceUpload onExtract={handleDataExtracted} /></>}
       title={<SearchForm form={form} totalCalculator={totalCalculator} />}
     >
       <>

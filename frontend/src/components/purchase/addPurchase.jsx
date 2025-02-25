@@ -37,7 +37,7 @@ const AddPurchase = () => {
 
   const onFormSubmit = async (values) => {
     try {
-      console.log("Form Values:", form.getFieldsValue());
+     
       const purchaseInvoiceProduct = form.getFieldValue(
         "purchaseInvoiceProduct"
       );

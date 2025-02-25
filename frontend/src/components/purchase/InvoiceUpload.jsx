@@ -57,7 +57,7 @@ const InvoiceUpload = ({ onExtract }) => {
         ""
         ) : (
            <>
-           <FaFileUpload /> Upload Image</>
+           <FaFileUpload /> Upload</>
         )}
       </Button>
 
