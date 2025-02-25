@@ -13,12 +13,10 @@ const ApiKeyForm = () => {
 
   const [apiKey, setApiKey] = useState("");
 
-  // Load the API key when the component mounts
   useEffect(() => {
     dispatch(loadApiConfig());
   }, [dispatch]);
 
-  // Update the form field when the API config is loaded
   useEffect(() => {
     if (apiConfig) {
       setApiKey(apiConfig.apiKey || "");
@@ -28,18 +26,19 @@ const ApiKeyForm = () => {
   const handleSave = () => {
     const payload = { apiKey };
     dispatch(updateApiConfig(payload));
-    form.resetFields(); // Optionally reset the form after saving
+    form.resetFields();
   };
 
   return (
-    <Card title="API Key Configuration" className="max-w-md mx-auto mt-10">
+    <Card
+      title="OpenAi API Key Configuration"
+      className="max-w-md mx-auto mt-10"
+    >
       <Form
         form={form}
         layout="vertical"
         onFinish={handleSave}
-        initialValues={{
-          apiKey,
-        }}
+        initialValues={{}}
       >
         <Form.Item
           label="API Key"

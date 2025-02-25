@@ -7,11 +7,11 @@ const fetchApiKey = async () => {
     const response = await axios.get("/api-config/1");
    
 
-    console.log
+  
     if (response.status !== 200 || !response.data.success) {
       throw new Error("Failed to fetch API key from backend.");
     }
-    console.log("API Key:", response.data.data.apiKey);
+   
     return response.data.data.apiKey; // Access API key from response
   } catch (error) {
     console.error("Error fetching API key:", error.response || error.message);
@@ -47,6 +47,10 @@ export const callOpenAIVisionAPI = async (base64Image) => {
       "discount": number,
       "supplierId": number,
       "note": string,
+      "supplierName": string,
+      "supplierAddress": string,
+      "supplierPhone": string,
+      "supplierEmail": string,
       "supplierMemoNo": string,
       "purchaseInvoiceProduct": [
         {

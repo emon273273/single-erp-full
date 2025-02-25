@@ -8,21 +8,26 @@ import AddProduct from "../product/AddProduct";
 import InvoiceUpload from "./InvoiceUpload";
 import SearchForm from "./SearchForm";
 import SelectAntd from "./SelectAntd";
+import CustomInvoiceDownload from "./CustomInvoiceDownload";
 
 export default function ProductAdd({
   form,
   productList,
   totalCalculator,
   subTotal,
+  setSelectedSupplier,
+  setSelectedSupplierAddress,
+  setSelectedSupplierPhone,
 }) {
-  // const [isModalVisible, setIsModalVisible] = useState(false);
-  // const handleAddProductClick = () => {
-  //   setIsModalVisible(true); // Open ProductModal
-  // };
-
   const handleDataExtracted = (data) => {
     if (!data) return;
-    console.log("data is ", data);
+
+    console.log(data);
+
+    setSelectedSupplier(data.supplierName);
+    setSelectedSupplierAddress(data.supplierAddress);
+    setSelectedSupplierPhone(data.supplierPhone);
+
     const processedProducts = data.purchaseInvoiceProduct.map(
       (invoiceProduct) => ({
         key: invoiceProduct.id || Math.random(),
@@ -41,7 +46,7 @@ export default function ProductAdd({
       supplierId: data.supplierId || "",
       note: data.note || "",
       supplierMemoNo: data.supplierMemoNo || "",
-      SupplierName: data.SupplierName || "",
+      supplierName: data.supplierName || "",
     });
 
     totalCalculator();
@@ -60,6 +65,7 @@ export default function ProductAdd({
           productSalePrice: findProduct?.productSalePrice || 0,
           productPurchasePrice: findProduct?.productPurchasePrice || 0,
           tax: 0,
+          supplierName: findProduct?.supplierName || "",
         };
       } else {
         return item;
@@ -129,9 +135,12 @@ export default function ProductAdd({
       className="h-[calc(100vh-100px)]"
       headClass=""
       bodyClass="p-0"
-      extra={<InvoiceUpload onExtract={handleDataExtracted} />}
+      extra={<><InvoiceUpload onExtract={handleDataExtracted} /><CustomInvoiceDownload></CustomInvoiceDownload></>}
       title={<SearchForm form={form} totalCalculator={totalCalculator} />}
     >
+      <>
+      
+      <div>
       <Form.List
         name="purchaseInvoiceProduct"
         rules={[
@@ -342,6 +351,8 @@ export default function ProductAdd({
           </>
         )}
       </Form.List>
+      </div>
+      </>
     </Card>
   );
 }

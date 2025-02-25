@@ -1,13 +1,14 @@
 import Button from "@/UI/Button";
 import { convertToBase64 } from "@/utils/imagetoBase64";
 import { callOpenAIVisionAPI } from "@/utils/openaiService";
+import { FaFileUpload } from "react-icons/fa";
 import { useState } from "react";
-
+import { toast } from "react-hot-toast"; // Import toast from react-hot-toast
 const InvoiceUpload = ({ onExtract }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // Handle file selection and automatic processing
+  
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -23,13 +24,17 @@ const InvoiceUpload = ({ onExtract }) => {
       //const extractedData = await callGeminiVisionAPI(base64Image);
       const extractedData = await callOpenAIVisionAPI(base64Image);
 
-      console.log("extracted data from openai", extractedData);
+      // console.log("extracted data from openai", extractedData);
       // Pass extracted data to parent component
       if (onExtract) {
         onExtract(extractedData);
       }
+      toast.success("Invoice data extracted successfully!");
     } catch (error) {
       console.error("Error extracting invoice data:", error);
+      toast.error(
+        "Failed to extract invoice data. Please check the API key or try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -47,7 +52,13 @@ const InvoiceUpload = ({ onExtract }) => {
         }}
         disabled={loading}
       >
-        {loading ? "Processing..." : "Upload Image"}
+        
+        {loading ? (
+        ""
+        ) : (
+           <>
+           <FaFileUpload /> Upload Image</>
+        )}
       </Button>
 
       <input
