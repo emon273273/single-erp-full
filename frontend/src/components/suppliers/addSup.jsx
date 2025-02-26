@@ -9,13 +9,9 @@ import {
 import UploadMany from "../Card/UploadMany";
 
 const AddSup = ({
-  selectedSupplier,
-  selectedSupplierAddress,
-  selectedSupplierPhone,
+ data
 }) => {
-  console.log(selectedSupplier);
-  console.log(selectedSupplierAddress);
-  console.log(selectedSupplierPhone);
+
   const dispatch = useDispatch();
   const { Title } = Typography;
 
@@ -42,14 +38,7 @@ const AddSup = ({
     setLoading(false);
   };
 
-  useEffect(() => {
-    if (selectedSupplier) {
-      form.setFieldsValue({
-        name: selectedSupplier,
-        phone: selectedSupplierPhone,
-      });
-    }
-  }, [form, selectedSupplier, selectedSupplierPhone]);
+ 
 
   return (
     <>
@@ -62,9 +51,7 @@ const AddSup = ({
           name="basic"
           layout="vertical"
           style={{ marginLeft: "40px", marginRight: "40px" }}
-          initialValues={{
-            remember: true,
-          }}
+          initialValues={data || {}}
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
           autoComplete="off"

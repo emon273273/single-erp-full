@@ -270,7 +270,6 @@ const AddProduct = ({ product }) => {
 
   return (
     <>
-      return (
       <Form
         form={form}
         layout="vertical"
@@ -631,7 +630,6 @@ const AddProduct = ({ product }) => {
           </Button>
         </Form.Item>
       </Form>
-      );
     </>
   );
 };

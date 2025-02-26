@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { addPurchase } from "../../redux/rtk/features/purchase/purchaseSlice";
 import AddSup from "../suppliers/addSup";
 import Payments from "./Payments";
-import SelectAntd from "./SelectAntd"; 
+import SelectAntd from "./SelectAntd";
 const AddPurchase = () => {
   const [loader, setLoader] = useState(false);
   const [subTotal, setSubTotal] = useState([]);
@@ -32,7 +32,6 @@ const AddPurchase = () => {
     (state) => state.products
   );
 
- 
   const [form] = Form.useForm();
 
   const onFormSubmit = async (values) => {
@@ -66,7 +65,6 @@ const AddPurchase = () => {
         return {
           ...product,
           productId,
-          supplierId: selectedSupplierId,
           productQuantity: product.productQuantity,
           productUnitPurchasePrice: product.productPurchasePrice,
           productUnitSalePrice: product.productSalePrice,
@@ -74,11 +72,20 @@ const AddPurchase = () => {
         };
       });
 
+      let supplierId = null;
+      if (selectedSupplierId) {
+        supplierId = selectedSupplierId;
+      } else {
+        supplierId = allSuppliers.find(
+          (item) => item.name === selectedSupplier
+        )?.id;
+      }
+
       const data = {
         ...values,
         purchaseInvoiceProduct: newArray,
         paidAmount: values.paidAmount || [],
-        supplierId: selectedSupplierId,
+        supplierId,
       };
 
       const resp = await dispatch(addPurchase(data));
@@ -146,18 +153,6 @@ const AddPurchase = () => {
     }
   }, [selectedSupplierId, form]);
 
-  // const supplier = allSuppliers?.find((item) => item.name === selectedSupplier);
-  // const isSupplierValid = !form.getFieldValue("supplierName") || !!supplier;
-
-  useEffect(() => {
-    const supplier = allSuppliers?.find(
-      (item) => item.name === selectedSupplier
-    );
-    if (supplier) {
-      setSelectedSupplierId(supplier.id);
-    }
-  }, [selectedSupplier, allSuppliers]);
-
   const supplier = allSuppliers?.find((item) => item.name === selectedSupplier);
   const isSupplierValid = !form.getFieldValue("supplierName") || !!supplier;
 
@@ -207,7 +202,6 @@ const AddPurchase = () => {
         <div className="flex flex-col w-[30%] 2xl:w-[25%]">
           <div className="flex-grow">
             <div className="w-full">
-              
               <Form.Item
                 label="Supplier"
                 name="supplierName"
@@ -232,10 +226,11 @@ const AddPurchase = () => {
                     title: "Add New Supplier",
                     component: (
                       <AddSup
-                        isModal={true}
-                        selectedSupplier={selectedSupplier}
-                        selectedSupplierAddress={selectedSupplierAddress}
-                        selectedSupplierPhone={selectedSupplierPhone}
+                        data={{
+                          name: selectedSupplier,
+                          address: selectedSupplierAddress,
+                          phone: selectedSupplierPhone,
+                        }}
                       />
                     ),
                     className: "md:w-[60%]",
@@ -248,7 +243,6 @@ const AddPurchase = () => {
                 />
               </Form.Item>
 
-            
               <Form.Item name="supplierId" hidden>
                 <Input />
               </Form.Item>
