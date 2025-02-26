@@ -10,15 +10,15 @@ import { useNavigate } from "react-router-dom";
 import { addPurchase } from "../../redux/rtk/features/purchase/purchaseSlice";
 import AddSup from "../suppliers/addSup";
 import Payments from "./Payments";
-import SelectAntd from "./SelectAntd"; // Import the SelectAntd component
-
+import SelectAntd from "./SelectAntd"; 
 const AddPurchase = () => {
   const [loader, setLoader] = useState(false);
   const [subTotal, setSubTotal] = useState([]);
   const [due, setDue] = useState(0);
   const [selectedSupplier, setSelectedSupplier] = useState();
-  const[selectedSupplierAddress, setSelectedSupplierAddress] = useState();
-  const[selectedSupplierPhone, setSelectedSupplierPhone] = useState();
+  const [selectedSupplierId, setSelectedSupplierId] = useState();
+  const [selectedSupplierAddress, setSelectedSupplierAddress] = useState();
+  const [selectedSupplierPhone, setSelectedSupplierPhone] = useState();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -32,12 +32,11 @@ const AddPurchase = () => {
     (state) => state.products
   );
 
-  // Form Function
+ 
   const [form] = Form.useForm();
 
   const onFormSubmit = async (values) => {
     try {
-     
       const purchaseInvoiceProduct = form.getFieldValue(
         "purchaseInvoiceProduct"
       );
@@ -67,6 +66,7 @@ const AddPurchase = () => {
         return {
           ...product,
           productId,
+          supplierId: selectedSupplierId,
           productQuantity: product.productQuantity,
           productUnitPurchasePrice: product.productPurchasePrice,
           productUnitSalePrice: product.productSalePrice,
@@ -78,6 +78,7 @@ const AddPurchase = () => {
         ...values,
         purchaseInvoiceProduct: newArray,
         paidAmount: values.paidAmount || [],
+        supplierId: selectedSupplierId,
       };
 
       const resp = await dispatch(addPurchase(data));
@@ -129,12 +130,33 @@ const AddPurchase = () => {
     const findSupplier = allSuppliers.find((sup) => sup.name === value);
     if (findSupplier) {
       setSelectedSupplier(findSupplier.name);
+      setSelectedSupplierId(findSupplier.id);
       form.setFieldsValue({
         suppliername: findSupplier.name,
-
+        supplierId: findSupplier.id,
       });
     }
   };
+
+  useEffect(() => {
+    if (selectedSupplierId) {
+      form.setFieldsValue({
+        supplierId: selectedSupplierId,
+      });
+    }
+  }, [selectedSupplierId, form]);
+
+  // const supplier = allSuppliers?.find((item) => item.name === selectedSupplier);
+  // const isSupplierValid = !form.getFieldValue("supplierName") || !!supplier;
+
+  useEffect(() => {
+    const supplier = allSuppliers?.find(
+      (item) => item.name === selectedSupplier
+    );
+    if (supplier) {
+      setSelectedSupplierId(supplier.id);
+    }
+  }, [selectedSupplier, allSuppliers]);
 
   const supplier = allSuppliers?.find((item) => item.name === selectedSupplier);
   const isSupplierValid = !form.getFieldValue("supplierName") || !!supplier;
@@ -185,7 +207,7 @@ const AddPurchase = () => {
         <div className="flex flex-col w-[30%] 2xl:w-[25%]">
           <div className="flex-grow">
             <div className="w-full">
-              {/* Replaced Form.Item with the new component */}
+              
               <Form.Item
                 label="Supplier"
                 name="supplierName"
@@ -226,7 +248,7 @@ const AddPurchase = () => {
                 />
               </Form.Item>
 
-              {/* Hidden field to store supplier ID */}
+            
               <Form.Item name="supplierId" hidden>
                 <Input />
               </Form.Item>
