@@ -45,6 +45,7 @@ class DatabaseSeeder extends Seeder
             // ProductAttributeValueSeeder::class,
             DiscountSeeder::class,
             PaymentMethodSeeder::class,
+            ApiConfigSeeder::class,
         ]);
     }
 }
