@@ -4,11 +4,14 @@ import axios from "axios";
 
 const fetchApiKey = async () => {
   try {
-    const response = await axios.get("/api-config/1"); // Laravel backend endpoint
+    const response = await axios.get("/api-config/1");
+   
+
+  
     if (response.status !== 200 || !response.data.success) {
       throw new Error("Failed to fetch API key from backend.");
     }
-    console.log("API Key:", response.data.data.apiKey);
+   
     return response.data.data.apiKey; // Access API key from response
   } catch (error) {
     console.error("Error fetching API key:", error.response || error.message);
@@ -27,7 +30,7 @@ export const callOpenAIVisionAPI = async (base64Image) => {
   
     // Fetch the API key from the Laravel backend
     const apiKey = await fetchApiKey();
-  console.log("my api key for openai........................",apiKey)
+  
 
     // Set headers with the fetched API key
     const headers = {
@@ -36,28 +39,34 @@ export const callOpenAIVisionAPI = async (base64Image) => {
     };
 
     const systemMessage = `
-      Analyze this invoice image and extract data to match this EXACT JSON structure:
-      {
-        "date": "YYYY-MM-DDTHH:mm:ss.SSSZ",
-        "paidAmount": number,
-        "discount": number,
-        "supplierId": number,
-        "note": string,
-        "supplierMemoNo": string,
-        "purchaseInvoiceProduct": [
-          {
-            "productName": string,
-            "productQuantity": number,
-            "productPurchasePrice": number,
-            "productSalePrice": number,
-            "taxPercentage": number,
-            "lineTotal": number,
-            "taxAmount": number
-          }
-        ]
-      }
-      ...
-    `;
+    Analyze this invoice image and extract data in the following EXACT JSON structure:
+    \`\`\`
+    {
+      "date": "YYYY-MM-DDTHH:mm:ss.SSSZ",
+      "paidAmount": number,
+      "discount": number,
+      "supplierId": number,
+      "note": string,
+      "supplierName": string,
+      "supplierAddress": string,
+      "supplierPhone": string,
+      "supplierEmail": string,
+      "supplierMemoNo": string,
+      "purchaseInvoiceProduct": [
+        {
+          "productName": string,
+          "productQuantity": number,
+          "productPurchasePrice": number,
+          "productSalePrice": number,
+          "taxPercentage": number,
+          "lineTotal": number,
+          "taxAmount": number
+        }
+      ]
+    }
+    \`\`\`
+    Ensure the output is strictly valid JSON and wrapped in triple backticks (\`\`\`).
+  `;
 
     const payload = {
       model: 'gpt-4o-mini',

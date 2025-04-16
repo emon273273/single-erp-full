@@ -1,5 +1,5 @@
 import { Button, Card, Form, Input, Typography } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useDispatch } from "react-redux";
 import {
@@ -8,7 +8,10 @@ import {
 } from "../../redux/rtk/features/supplier/supplierSlice";
 import UploadMany from "../Card/UploadMany";
 
-const AddSup = () => {
+const AddSup = ({
+ data
+}) => {
+
   const dispatch = useDispatch();
   const { Title } = Typography;
 
@@ -35,6 +38,8 @@ const AddSup = () => {
     setLoading(false);
   };
 
+ 
+
   return (
     <>
       <div className="h-full">
@@ -46,9 +51,7 @@ const AddSup = () => {
           name="basic"
           layout="vertical"
           style={{ marginLeft: "40px", marginRight: "40px" }}
-          initialValues={{
-            remember: true,
-          }}
+          initialValues={data || {}}
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
           autoComplete="off"

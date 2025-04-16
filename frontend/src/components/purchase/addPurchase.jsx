@@ -1,5 +1,4 @@
-import { Button, DatePicker, Form, Input, Select } from "antd";
-
+import { Button, DatePicker, Form, Input } from "antd";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { loadProduct } from "../../redux/rtk/features/product/productSlice";
@@ -9,17 +8,17 @@ import Products from "./Products";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 import { addPurchase } from "../../redux/rtk/features/purchase/purchaseSlice";
-import BigDrawer from "../Drawer/BigDrawer";
 import AddSup from "../suppliers/addSup";
 import Payments from "./Payments";
-
+import SelectAntd from "./SelectAntd";
 const AddPurchase = () => {
-  const { Option } = Select;
   const [loader, setLoader] = useState(false);
   const [subTotal, setSubTotal] = useState([]);
   const [due, setDue] = useState(0);
   const [selectedSupplier, setSelectedSupplier] = useState();
-
+  const [selectedSupplierId, setSelectedSupplierId] = useState();
+  const [selectedSupplierAddress, setSelectedSupplierAddress] = useState();
+  const [selectedSupplierPhone, setSelectedSupplierPhone] = useState();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -33,7 +32,6 @@ const AddPurchase = () => {
     (state) => state.products
   );
 
-  // Form Function
   const [form] = Form.useForm();
 
   const onFormSubmit = async (values) => {
@@ -45,7 +43,7 @@ const AddPurchase = () => {
       const mergedObject = purchaseInvoiceProduct?.reduce(
         (accumulator, currentObject) => {
           const productName = currentObject.productName;
-          const supplierName=currentObject.supplierName
+
           if (!accumulator[productName]) {
             accumulator[productName] = { ...currentObject };
           } else {
@@ -56,9 +54,9 @@ const AddPurchase = () => {
         },
         {}
       );
+
       const mergedArray = Object.values(mergedObject);
-      console.log("merged array",mergedArray)
-      
+
       const newArray = mergedArray.map((product) => {
         const productId = productList.find(
           (p) => p.name.toLowerCase() === product.productName?.toLowerCase()
@@ -71,14 +69,23 @@ const AddPurchase = () => {
           productUnitPurchasePrice: product.productPurchasePrice,
           productUnitSalePrice: product.productSalePrice,
           tax: product.tax,
-          
         };
       });
-      console.log(values);
+
+      let supplierId = null;
+      if (selectedSupplierId) {
+        supplierId = selectedSupplierId;
+      } else {
+        supplierId = allSuppliers.find(
+          (item) => item.name === selectedSupplier
+        )?.id;
+      }
+
       const data = {
         ...values,
         purchaseInvoiceProduct: newArray,
         paidAmount: values.paidAmount || [],
+        supplierId,
       };
 
       const resp = await dispatch(addPurchase(data));
@@ -125,7 +132,30 @@ const AddPurchase = () => {
     setDue(due);
   };
 
-  const supplier = allSuppliers?.find((item) => item.id === selectedSupplier);
+  // New function to handle supplier selection change
+  const handleSetSupplier = (value) => {
+    const findSupplier = allSuppliers.find((sup) => sup.name === value);
+    if (findSupplier) {
+      setSelectedSupplier(findSupplier.name);
+      setSelectedSupplierId(findSupplier.id);
+      form.setFieldsValue({
+        suppliername: findSupplier.name,
+        supplierId: findSupplier.id,
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (selectedSupplierId) {
+      form.setFieldsValue({
+        supplierId: selectedSupplierId,
+      });
+    }
+  }, [selectedSupplierId, form]);
+
+  const supplier = allSuppliers?.find((item) => item.name === selectedSupplier);
+  const isSupplierValid = !form.getFieldValue("supplierName") || !!supplier;
+
   const total = subTotal?.reduce((acc, item) => acc + item.subPrice, 0);
   const totalTaxAmount = subTotal?.reduce(
     (acc, item) => acc + item.totalVat,
@@ -152,7 +182,6 @@ const AddPurchase = () => {
       autoComplete="off"
       initialValues={{
         paidAmount: [],
-
         date: dayjs(),
         purchaseInvoiceProduct: [{}],
       }}
@@ -165,21 +194,17 @@ const AddPurchase = () => {
             form={form}
             productList={productList}
             productLoading={productLoading}
+            setSelectedSupplier={setSelectedSupplier}
+            setSelectedSupplierAddress={setSelectedSupplierAddress}
+            setSelectedSupplierPhone={setSelectedSupplierPhone}
           />
         </div>
         <div className="flex flex-col w-[30%] 2xl:w-[25%]">
           <div className="flex-grow">
             <div className="w-full">
               <Form.Item
-                label={
-                  <>
-                    Supplier{" "}
-                    <BigDrawer className="" title="Add New Supplier">
-                      <AddSup drawer={true} />
-                    </BigDrawer>
-                  </>
-                }
-                name="supplierId"
+                label="Supplier"
+                name="supplierName"
                 className="w-full mb-0"
                 rules={[
                   {
@@ -187,26 +212,41 @@ const AddPurchase = () => {
                     message: "Please Select a supplier!",
                   },
                 ]}
+                validateStatus={!isSupplierValid ? "error" : "success"}
+                help={!isSupplierValid ? "Supplier Not Found" : null}
               >
-                <Select
+                <SelectAntd
                   className="w-full"
-                  loading={!allSuppliers}
-                  onChange={(id) => setSelectedSupplier(id)}
-                  showSearch
-                  placeholder="Select a supplier "
-                  optionFilterProp="children"
-                  filterOption={(input, option) =>
-                    option.children.toLowerCase().includes(input.toLowerCase())
-                  }
-                >
-                  {allSuppliers &&
-                    allSuppliers.map((sup) => (
-                      <Option key={sup.id} value={sup.id}>
-                        {sup.name}
-                      </Option>
-                    ))}
-                </Select>
+                  placeholder="Select Supplier"
+                  options={allSuppliers?.map((sup) => ({
+                    label: sup.name,
+                    value: sup.name,
+                  }))}
+                  addNew={{
+                    title: "Add New Supplier",
+                    component: (
+                      <AddSup
+                        data={{
+                          name: selectedSupplier,
+                          address: selectedSupplierAddress,
+                          phone: selectedSupplierPhone,
+                        }}
+                      />
+                    ),
+                    className: "md:w-[60%]",
+                    zIndex: 1050,
+                  }}
+                  onChange={(value) => {
+                    handleSetSupplier(value);
+                  }}
+                  ismatch={isSupplierValid}
+                />
               </Form.Item>
+
+              <Form.Item name="supplierId" hidden>
+                <Input />
+              </Form.Item>
+
               {supplier && (
                 <div className="flex justify-between py-1 px-4">
                   <span>
@@ -295,5 +335,4 @@ const AddPurchase = () => {
     </Form>
   );
 };
-
 export default AddPurchase;

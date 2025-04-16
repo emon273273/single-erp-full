@@ -3,6 +3,8 @@ import axios from "axios";
 const fetchApiKey = async () => {
   try {
     const response = await axios.get("/api-config/1"); // Laravel backend endpoint
+
+    
     if (response.status !== 200 || !response.data.success) {
       throw new Error("Failed to fetch API key from backend.");
     }
@@ -22,60 +24,40 @@ export default fetchApiKey;
 export const callGeminiVisionAPI = async (base64Image) => {
 
   const apiKey = await fetchApiKey();
-  console.log("my api key........................",apiKey)
+
 
   const apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=" + apiKey;
 
   // Define system prompt
   const systemMessage = `
-    Extract structured JSON data from this invoice image using the following format:
-    {
-      "date": "YYYY-MM-DDTHH:mm:ss.SSSZ",
-      "paidAmount": number,
-      "SupplierName: string",
-      "discount": number,
-      "supplierId": number,
-      "note": string,
-      "supplierMemoNo": string,
-      "purchaseInvoiceProduct": [
-        {
-          "productName": string,
-          "productQuantity": number,
-          "productPurchasePrice": number,
-          "productSalePrice": number,
-          "taxPercentage": number,
-          "lineTotal": number,
-          "taxAmount": number
-        }
-      ]
-    }
-
-    **Rules to follow strictly:**
-    1. FIELD MAPPING:
-      - "supplierName" = "Supplier", "Company", "Name"
-       - "productName" = "Item", "Product", "Description"
-       - "productQuantity" = "Qty", "Quantity", "Units"
-       - "productPurchasePrice" = "Cost", "Unit Price", "Purchase Price"
-       - "productSalePrice" = "Price", "Selling Price", "Retail Price"
-       - "taxPercentage" = "Tax%", "VAT", "GST", "Tax Rate"
-       - "lineTotal" = "Amount", "Total", "Subtotal"
-       - "taxAmount" = "Tax", "VAT Amount", "GST Amount"
-    
-    2. DATA RULES:
-       - Convert amounts to numbers (e.g., "$150.00" → 150)
-       - Convert dates to ISO 8601 format
-       - Use null for missing numbers
-       - Use an empty string "" for missing text
-       - Calculate missing values where possible:
-         - salePrice = purchasePrice * 1.2 (if missing)
-         - taxAmount = lineTotal * (taxPercentage / 100) (if missing)
-         - lineTotal = quantity * purchasePrice (if missing)
-    
-    3. RETURN:
-       - **Only valid JSON (No markdown, no explanations)**
-       - **Maintain this exact structure**
-       - **Include ALL fields even if null**
-  `;
+  Analyze this invoice image and extract data in the following EXACT JSON structure:
+  \`\`\`
+  {
+    "date": "YYYY-MM-DDTHH:mm:ss.SSSZ",
+    "paidAmount": number,
+    "discount": number,
+    "supplierId": number,
+    "note": string,
+    "supplierName": string,
+    "supplierAddress": string,
+    "supplierPhone": string,
+    "supplierEmail": string,
+    "supplierMemoNo": string,
+    "purchaseInvoiceProduct": [
+      {
+        "productName": string,
+        "productQuantity": number,
+        "productPurchasePrice": number,
+        "productSalePrice": number,
+        "taxPercentage": number,
+        "lineTotal": number,
+        "taxAmount": number
+      }
+    ]
+  }
+  \`\`\`
+  Ensure the output is strictly valid JSON and wrapped in triple backticks (\`\`\`).
+`;
 
   const payload = {
     contents: [
